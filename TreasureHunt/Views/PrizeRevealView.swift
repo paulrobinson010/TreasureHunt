@@ -7,7 +7,7 @@ struct PrizeRevealView: View {
         VStack(spacing: 20) {
             Image(systemName: "trophy.fill")
                 .font(.system(size: 84))
-                .foregroundStyle(.yellow)
+                .foregroundStyle(Color.brandSand)
                 .shadow(radius: 8)
             Text("Treasure hunt solved!")
                 .font(.title.bold())

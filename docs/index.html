@@ -8,9 +8,13 @@
 <link rel="icon" type="image/png" href="/assets/favicon.png">
 <style>
   :root {
-    --bg: #0e1a2b;
-    --card: #16263c;
-    --gold: #f0b429;
+    /* Palette from the app icon: island at night */
+    --bg: #04070f;
+    --card: #0c1a26;
+    --gold: #f4c952;
+    --cyan: #3cc6e3;
+    --lime: #b7d331;
+    --red: #e6392e;
     --text: #e8eef6;
     --muted: #9fb0c3;
   }
@@ -26,12 +30,12 @@
   header img {
     width: 128px; height: 128px;
     border-radius: 28px;
-    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+    box-shadow: 0 0 48px rgba(60,198,227,.35);
   }
   h1 { font-size: 2.4rem; margin-top: 20px; }
-  .tagline { color: var(--gold); font-size: 1.2rem; margin-top: 6px; }
+  .tagline { color: var(--lime); font-size: 1.2rem; margin-top: 6px; }
   section { padding: 32px 0; }
-  h2 { font-size: 1.5rem; margin-bottom: 20px; color: var(--gold); }
+  h2 { font-size: 1.5rem; margin-bottom: 20px; color: var(--cyan); }
   .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
   .card {
     background: var(--card);
@@ -90,7 +94,7 @@
   <footer>
     No accounts. No tracking. No servers. Hunts are encrypted and live only on
     your phones and inside the links you share.<br>
-    <a href="/privacy/" style="color: var(--gold)">Privacy policy</a>
+    <a href="/privacy/" style="color: var(--cyan)">Privacy policy</a>
   </footer>
 </div>
 </body>

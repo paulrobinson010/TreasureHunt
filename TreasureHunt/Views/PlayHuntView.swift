@@ -29,7 +29,7 @@ struct PlayHuntView: View {
                                 }
                             } else {
                                 MapCircle(center: point.displayCenter, radius: Config.displayRadius)
-                                    .foregroundStyle(.orange.opacity(0.3))
+                                    .foregroundStyle(Color.brandCyan.opacity(0.3))
                             }
                         }
                     }
@@ -73,6 +73,7 @@ struct PlayHuntView: View {
             if hunt.isSolved {
                 Button("Show my prize! 🎁") { showPrize = true }
                     .buttonStyle(.borderedProminent)
+                    .tint(.brandRed)
             } else if let hint = hint(for: hunt) {
                 Text(hint)
                     .font(.footnote)

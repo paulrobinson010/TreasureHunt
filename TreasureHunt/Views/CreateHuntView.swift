@@ -22,7 +22,7 @@ struct CreateHuntView: View {
                             Annotation("Point \(index + 1)", coordinate: point.coordinate) {
                                 Image(systemName: "\(min(index + 1, 50)).circle.fill")
                                     .font(.title)
-                                    .foregroundStyle(.white, .red)
+                                    .foregroundStyle(.white, Color.brandRed)
                             }
                         }
                     }

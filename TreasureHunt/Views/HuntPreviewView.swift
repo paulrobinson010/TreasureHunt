@@ -24,7 +24,7 @@ struct HuntPreviewView: View {
                 UserAnnotation()
                 if let center = previewCenter {
                     MapCircle(center: center, radius: Config.previewRadius)
-                        .foregroundStyle(.orange.opacity(0.25))
+                        .foregroundStyle(Color.brandCyan.opacity(0.25))
                 }
             }
             VStack(spacing: 12) {

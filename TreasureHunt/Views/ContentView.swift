@@ -126,8 +126,8 @@ struct HuntRow: View {
     }
 
     private var color: Color {
-        if hunt.role == .created { return .blue }
-        return hunt.isSolved ? .yellow : .orange
+        if hunt.role == .created { return .brandCyan }
+        return hunt.isSolved ? .brandSand : .brandLime
     }
 
     private var subtitle: String {
