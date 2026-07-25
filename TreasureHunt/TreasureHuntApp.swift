@@ -9,12 +9,9 @@ struct TreasureHuntApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(store)
-                .onOpenURL { url in
-                    guard let hunt = HuntShareCodec.hunt(fromURL: url) else {
-                        importResult = .failed
-                        return
-                    }
-                    importResult = store.importHunt(hunt) ? .imported(hunt.name) : .duplicate(hunt.name)
+                .onOpenURL { handle(url: $0) }
+                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                    if let url = activity.webpageURL { handle(url: url) }
                 }
                 .alert(
                     "Treasure Hunt",
@@ -29,6 +26,14 @@ struct TreasureHuntApp: App {
                     Text(result.message)
                 }
         }
+    }
+
+    private func handle(url: URL) {
+        guard let hunt = HuntShareCodec.hunt(fromURL: url) else {
+            importResult = .failed
+            return
+        }
+        importResult = store.importHunt(hunt) ? .imported(hunt.name) : .duplicate(hunt.name)
     }
 }
 

@@ -51,6 +51,8 @@ final class HuntStore: ObservableObject {
 
     private func save() {
         guard let data = try? JSONEncoder().encode(hunts) else { return }
-        try? data.write(to: fileURL, options: .atomic)
+        // completeFileProtection keeps the store encrypted at rest until the
+        // device is first unlocked.
+        try? data.write(to: fileURL, options: [.atomic, .completeFileProtection])
     }
 }

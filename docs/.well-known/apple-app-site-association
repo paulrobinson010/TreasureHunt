@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["TEAMID.com.paulrobinson.TreasureHunt"],
+        "appID": "TEAMID.com.paulrobinson.TreasureHunt",
+        "paths": ["/hunt", "/hunt/", "/hunt/*"],
+        "components": [
+          { "/": "/hunt" },
+          { "/": "/hunt/" },
+          { "/": "/hunt/*" }
+        ]
+      }
+    ]
+  }
+}

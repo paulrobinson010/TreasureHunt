@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treasure Hunt — get the kids out and about</title>
+<meta name="description" content="Make real-world GPS treasure hunts for your kids. Drop points on a map, send the hunt over iMessage or WhatsApp, and let them hunt it down with a compass and a phone that buzzes when they're close.">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<style>
+  :root {
+    --bg: #0e1a2b;
+    --card: #16263c;
+    --gold: #f0b429;
+    --text: #e8eef6;
+    --muted: #9fb0c3;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  header { text-align: center; padding: 64px 0 40px; }
+  header img {
+    width: 128px; height: 128px;
+    border-radius: 28px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  }
+  h1 { font-size: 2.4rem; margin-top: 20px; }
+  .tagline { color: var(--gold); font-size: 1.2rem; margin-top: 6px; }
+  section { padding: 32px 0; }
+  h2 { font-size: 1.5rem; margin-bottom: 20px; color: var(--gold); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .card .emoji { font-size: 2rem; }
+  .card h3 { margin: 10px 0 6px; font-size: 1.1rem; }
+  .card p { color: var(--muted); font-size: .95rem; }
+  .get {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+  }
+  .get p { color: var(--muted); }
+  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 40px 0 56px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="/assets/logo.png" alt="Treasure Hunt logo">
+    <h1>Treasure Hunt</h1>
+    <p class="tagline">Get the kids out and about!</p>
+  </header>
+
+  <section>
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="card">
+        <div class="emoji">🗺️</div>
+        <h3>Make a hunt</h3>
+        <p>Drop treasure points on a map, name the hunt, and write down the prize. It stays secret until the hunt is solved.</p>
+      </div>
+      <div class="card">
+        <div class="emoji">💬</div>
+        <h3>Send it</h3>
+        <p>Share the hunt over iMessage, WhatsApp or anything else. No accounts, no servers — the whole hunt travels inside the link.</p>
+      </div>
+      <div class="card">
+        <div class="emoji">🧭</div>
+        <h3>Hunt it down</h3>
+        <p>The map shows rough zones, never exact spots. Get within 25&nbsp;m and a compass appears — point the phone the right way and it buzzes and pings. Find every point and the prize is revealed!</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="get">
+      <h2>Get the app</h2>
+      <p>Treasure Hunt is currently in family testing and installed directly by the hunt maker. If someone sent you a hunt link, ask them to set the app up on your phone — then tap the link again and the hunt jumps straight in.</p>
+    </div>
+  </section>
+
+  <footer>
+    No accounts. No tracking. No servers. Hunts are encrypted and live only on
+    your phones and inside the links you share.<br>
+    <a href="/privacy/" style="color: var(--gold)">Privacy policy</a>
+  </footer>
+</div>
+</body>
+</html>

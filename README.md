@@ -46,13 +46,38 @@ missing-file warning.
 Every phone playing needs the app installed (until it's on TestFlight or the
 App Store, that means building it onto each kid's phone from Xcode).
 
-Two ways to send a hunt, both offline and serverless:
+Hunts are sent serverlessly — the whole hunt travels inside the link or file
+itself as **encrypted ciphertext** (JSON → zlib → AES-256-GCM, with the key
+derived in-app by hashing an app secret with SHA-256, see
+`TreasureHunt/Models/HuntCrypto.swift`). Messaging services, link previews and
+snoopers see only gibberish; only the app can decrypt it. Since the key ships
+inside the app this is transport protection between copies of the app, not
+end-to-end secrecy from someone who reverse-engineers the binary. On-device,
+the hunt store is written with iOS complete file protection.
 
-- **`.treasurehunt` file (recommended)** — shared as an attachment; tapping it
-  in iMessage/WhatsApp opens it straight into the app.
-- **`treasurehunt://` link** — a compressed code embedded in a message. Some
-  messaging apps don't make custom links tappable, so the app also has an
-  **Import** button: paste the whole message and it fishes the link out.
+Three ways a hunt can arrive, all handled automatically:
+
+- **Universal link (recommended)** — `https://treasurehunt.robbo-online.uk/hunt/?d=…`
+  is tappable in iMessage/WhatsApp and opens straight into the app. Phones
+  without the app land on the website's fallback page instead.
+- **`.treasurehunt` file** — shared as an attachment; tapping it opens the app.
+- **Import button** — paste a whole message into the app and it fishes the
+  link out. Legacy `treasurehunt://` links still work here too.
+
+## Website & universal links
+
+The site at https://treasurehunt.robbo-online.uk lives in `docs/` and deploys
+via GitHub Actions (`.github/workflows/pages.yml`) on every push to `main`.
+It serves the landing page, the hunt-link fallback page, the privacy policy
+(`/privacy/`), and the `apple-app-site-association` file that makes universal
+links work.
+
+**One manual step remains:** edit
+`docs/.well-known/apple-app-site-association` and replace `TEAMID` with your
+Apple Team ID (Xcode → target → Signing & Capabilities, under your team name;
+or developer.apple.com → Membership). If Xcode made you change the bundle id,
+update it there too. Then push, and delete + reinstall the app on each phone —
+iOS fetches the association file at install time.
 
 ## Tuning the game
 

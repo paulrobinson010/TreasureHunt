@@ -83,8 +83,11 @@ struct ContentView: View {
         importText = ""
         var hunt: Hunt?
         // The link is usually buried in a longer message — fish it out.
-        if let range = text.range(of: "treasurehunt://[A-Za-z0-9_\\-/]+", options: .regularExpression),
+        if let range = text.range(of: "https://[^\\s]+", options: .regularExpression),
            let url = URL(string: String(text[range])) {
+            hunt = HuntShareCodec.hunt(fromURL: url)
+        } else if let range = text.range(of: "treasurehunt://[A-Za-z0-9_\\-/]+", options: .regularExpression),
+                  let url = URL(string: String(text[range])) {
             hunt = HuntShareCodec.hunt(fromURL: url)
         } else {
             hunt = HuntShareCodec.hunt(fromCode: text)
