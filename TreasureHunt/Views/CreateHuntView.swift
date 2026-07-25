@@ -9,7 +9,6 @@ struct CreateHuntView: View {
     @State private var name = ""
     @State private var prize = ""
     @State private var points: [TreasurePoint] = []
-    @State private var camera: MapCameraPosition = .userLocation(fallback: .automatic)
     @State private var sharing: Hunt?
 
     private enum Field { case name, prize }
@@ -20,7 +19,7 @@ struct CreateHuntView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                Map(position: $camera) {
+                Map(initialPosition: .userLocation(fallback: .automatic)) {
                     UserAnnotation()
                     ForEach(Array(points.enumerated()), id: \.element.id) { index, point in
                         Annotation("Point \(index + 1)", coordinate: point.coordinate) {
@@ -31,7 +30,13 @@ struct CreateHuntView: View {
                     }
                 }
                 .mapStyle(mapFlavor.style)
-                .onMapCameraChange(frequency: .continuous) { context in
+                .mapControls {
+                    MapUserLocationButton()
+                    MapCompass()
+                }
+                // .onEnd, not .continuous: per-frame state updates re-render the
+                // view mid-gesture and break one-finger pan and rotate.
+                .onMapCameraChange(frequency: .onEnd) { context in
                     mapCenter = context.camera.centerCoordinate
                 }
                 .overlay(alignment: .topTrailing) {

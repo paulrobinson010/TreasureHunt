@@ -8,7 +8,6 @@ struct PlayHuntView: View {
     @StateObject private var locationManager = LocationManager()
     let huntID: UUID
 
-    @State private var camera: MapCameraPosition = .userLocation(fallback: .automatic)
     @State private var activePoint: TreasurePoint?
     @State private var showPrize = false
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
@@ -19,7 +18,7 @@ struct PlayHuntView: View {
         Group {
             if let hunt {
                 ZStack(alignment: .bottom) {
-                    Map(position: $camera) {
+                    Map(initialPosition: .userLocation(fallback: .automatic)) {
                         UserAnnotation()
                         ForEach(hunt.points) { point in
                             if hunt.isFound(point) {
@@ -37,6 +36,10 @@ struct PlayHuntView: View {
                     statusBar(for: hunt)
                 }
                 .mapStyle(mapFlavor.style)
+                .mapControls {
+                    MapUserLocationButton()
+                    MapCompass()
+                }
                 .overlay(alignment: .topTrailing) {
                     MapStyleButton(flavor: $mapFlavor)
                         .padding(8)
