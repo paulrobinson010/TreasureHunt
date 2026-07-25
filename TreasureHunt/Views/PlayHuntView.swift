@@ -13,6 +13,9 @@ struct PlayHuntView: View {
     @State private var activePoint: TreasurePoint?
     @State private var showPrize = false
     @State private var trail: [CLLocationCoordinate2D] = []
+    /// Set when the hunter reaches an X: the dig begins.
+    @State private var digPoint: TreasurePoint?
+    @State private var digLoot: LootItem?
     /// Current map rotation, so the guide arrow can point in screen space.
     @State private var cameraHeading: Double = 0
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
@@ -59,8 +62,18 @@ struct PlayHuntView: View {
                     .padding(8)
                 }
                 .overlay {
-                    if let activePoint, !hunt.isFound(activePoint) {
+                    if let activePoint, digPoint == nil, !hunt.isFound(activePoint) {
                         CompassView(locationManager: locationManager, target: activePoint)
+                    }
+                }
+                .overlay {
+                    if let digPoint, let digLoot {
+                        DigView(loot: digLoot) {
+                            store.collect(digLoot)
+                            found(digPoint, in: hunt)
+                            self.digPoint = nil
+                            self.digLoot = nil
+                        }
                     }
                 }
             } else {
@@ -165,7 +178,13 @@ struct PlayHuntView: View {
         let distance = GeoMath.distance(from: location.coordinate, to: nearest.coordinate)
 
         if distance <= Config.foundRadius {
-            found(nearest, in: hunt)
+            // Reached the X — time to dig, not to auto-find.
+            guard digPoint == nil else { return }
+            FeedbackManager.shared.stopDetector()
+            FeedbackManager.shared.stopBuzzing()
+            activePoint = nil
+            digLoot = LootCatalog.roll(huntName: hunt.name)
+            digPoint = nearest
         } else if distance <= Config.zoneRadius {
             FeedbackManager.shared.updateDetector(distance: distance)
             if activePoint?.id != nearest.id {

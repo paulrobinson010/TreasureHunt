@@ -70,6 +70,14 @@ struct ContentView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        TreasureChestView()
+                    } label: {
+                        Text("💰")
+                    }
+                    .accessibilityLabel("My treasure chest")
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         creating = true
                     } label: {

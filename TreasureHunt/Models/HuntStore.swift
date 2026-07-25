@@ -4,14 +4,23 @@ import Foundation
 @MainActor
 final class HuntStore: ObservableObject {
     @Published private(set) var hunts: [Hunt] = []
+    @Published private(set) var loot: [LootItem] = []
 
     private let fileURL: URL
+    private let lootURL: URL
 
     init() {
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         fileURL = dir.appendingPathComponent("hunts.json")
+        lootURL = dir.appendingPathComponent("loot.json")
         load()
+    }
+
+    /// Into the chest it goes.
+    func collect(_ item: LootItem) {
+        loot.insert(item, at: 0)
+        saveLoot()
     }
 
     func hunt(id: UUID) -> Hunt? {
@@ -54,9 +63,14 @@ final class HuntStore: ObservableObject {
     }
 
     private func load() {
-        guard let data = try? Data(contentsOf: fileURL),
-              let decoded = try? JSONDecoder().decode([Hunt].self, from: data) else { return }
-        hunts = decoded
+        if let data = try? Data(contentsOf: fileURL),
+           let decoded = try? JSONDecoder().decode([Hunt].self, from: data) {
+            hunts = decoded
+        }
+        if let data = try? Data(contentsOf: lootURL),
+           let decoded = try? JSONDecoder().decode([LootItem].self, from: data) {
+            loot = decoded
+        }
     }
 
     private func save() {
@@ -64,5 +78,10 @@ final class HuntStore: ObservableObject {
         // completeFileProtection keeps the store encrypted at rest until the
         // device is first unlocked.
         try? data.write(to: fileURL, options: [.atomic, .completeFileProtection])
+    }
+
+    private func saveLoot() {
+        guard let data = try? JSONEncoder().encode(loot) else { return }
+        try? data.write(to: lootURL, options: [.atomic, .completeFileProtection])
     }
 }

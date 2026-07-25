@@ -66,6 +66,13 @@ extension HuntStore {
         add(saturday)
         add(playgroundGold)
         add(centralPark)
+
+        // A part-filled chest for the collection screenshot.
+        if loot.isEmpty {
+            for (emoji, name) in [("💎", "Sparkly Diamond"), ("🦜", "Chatty Parrot"), ("🗝️", "Mystery Key"), ("🐚", "Singing Seashell"), ("👑", "Pirate Crown")] {
+                collect(LootItem(id: UUID(), emoji: emoji, name: name, huntName: "Playground Gold", date: .now.addingTimeInterval(-86400)))
+            }
+        }
     }
 }
 #endif

@@ -20,7 +20,7 @@ final class FeedbackManager {
     private init() {
         // Ambient: mixes with the family's music and respects the mute switch.
         try? AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
-        for name in ["point-found", "hunt-solved", "detector-beep"] {
+        for name in ["point-found", "hunt-solved", "detector-beep", "dig"] {
             if let url = Bundle.main.url(forResource: name, withExtension: "wav"),
                let player = try? AVAudioPlayer(contentsOf: url) {
                 player.prepareToPlay()
@@ -32,6 +32,12 @@ final class FeedbackManager {
     /// Short ping — entering a point's zone, and the on-target beep.
     func ping() {
         AudioServicesPlaySystemSound(1057)
+    }
+
+    /// A sandy thud for each shovel of digging.
+    func dig() {
+        play("dig")
+        impact.impactOccurred()
     }
 
     /// Small fanfare — one treasure point found.
