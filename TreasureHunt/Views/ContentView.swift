@@ -45,7 +45,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .sheet(isPresented: $creating) {
+            .fullScreenCover(isPresented: $creating) {
                 CreateHuntView()
             }
             .alert("Import a hunt", isPresented: $importing) {
