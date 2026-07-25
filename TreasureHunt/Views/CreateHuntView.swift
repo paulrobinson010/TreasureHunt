@@ -43,10 +43,11 @@ struct CreateHuntView: View {
                         .padding(8)
                 }
                 .overlay {
-                    // Crosshair the map moves under — no tap gesture to fight
-                    // MapKit's pan/zoom.
+                    // The X — the map moves under it, so there's no tap
+                    // gesture to fight MapKit's pan/zoom.
                     Image(systemName: "plus")
-                        .font(.system(size: 30, weight: .bold))
+                        .font(.system(size: 34, weight: .heavy))
+                        .rotationEffect(.degrees(45))
                         .foregroundStyle(Color.brandRed)
                         .shadow(color: .black.opacity(0.5), radius: 2)
                         .allowsHitTesting(false)
@@ -54,9 +55,9 @@ struct CreateHuntView: View {
                 .overlay(alignment: .bottom) {
                     Button {
                         focusedField = nil
-                        addPointAtCrosshair()
+                        addPointAtX()
                     } label: {
-                        Label("Drop point here", systemImage: "mappin.and.ellipse")
+                        Label("Drop point on the X", systemImage: "mappin.and.ellipse")
                             .font(.fun(15, .semibold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 18)
@@ -69,7 +70,7 @@ struct CreateHuntView: View {
                 }
                 .overlay(alignment: .top) {
                     Text(points.isEmpty
-                         ? "Line up the crosshair and tap \"Drop point here\""
+                         ? "Line up the X and tap \"Drop point on the X\""
                          : "\(points.count) point\(points.count == 1 ? "" : "s") placed — move the map to add more")
                         .font(.fun(13))
                         .padding(.horizontal, 12)
@@ -121,7 +122,7 @@ struct CreateHuntView: View {
         }
     }
 
-    private func addPointAtCrosshair() {
+    private func addPointAtX() {
         guard let mapCenter else { return }
         points.append(TreasurePoint(coordinate: mapCenter))
     }

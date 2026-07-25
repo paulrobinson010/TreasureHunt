@@ -12,6 +12,16 @@ extension Color {
     static let brandCard = Color(red: 0.05, green: 0.10, blue: 0.15)      // card surfaces, same as the website
 }
 
+/// The brand wordmark: red X, white -Marks, everywhere the name appears.
+struct BrandWordmark: View {
+    var size: CGFloat = 28
+
+    var body: some View {
+        (Text("X").foregroundStyle(Color.brandRed) + Text("-Marks").foregroundStyle(.white))
+            .font(.fun(size, .bold))
+    }
+}
+
 /// The night-ocean backdrop used behind every screen: navy gradient with
 /// faint glowing blobs of the island colours.
 struct OceanBackground: View {

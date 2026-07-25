@@ -29,7 +29,11 @@ struct ContentView: View {
             .scrollContentBackground(.hidden)
             .background(OceanBackground())
             .navigationTitle("X-Marks")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    BrandWordmark(size: 24)
+                }
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         importing = true

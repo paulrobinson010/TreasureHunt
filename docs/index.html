@@ -6,105 +6,111 @@
 <title>X-Marks — get the kids out and about</title>
 <meta name="description" content="Make real-world GPS treasure hunts for your kids. Drop points on a map, send the hunt over iMessage or WhatsApp, and let them hunt it down with a compass and a phone that buzzes when they're close.">
 <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
+<link rel="stylesheet" href="/assets/site.css?v=1">
 <style>
-  @font-face {
-    font-family: 'Baloo 2';
-    src: url('/assets/fonts/Baloo2.ttf') format('truetype');
-    font-weight: 400 800;
-    font-display: swap;
-  }
-  :root {
-    /* Palette from the app icon: island at night */
-    --bg: #04070f;
-    --card: #0c1a26;
-    --gold: #f4c952;
-    --cyan: #3cc6e3;
-    --lime: #b7d331;
-    --red: #e6392e;
-    --text: #e8eef6;
-    --muted: #9fb0c3;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Baloo 2', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: radial-gradient(1100px 520px at 50% -10%, #0a2a3a, var(--bg));
-    color: var(--text);
-    line-height: 1.6;
-  }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
-  header { text-align: center; padding: 64px 0 40px; }
-  header img {
-    width: 128px; height: 128px;
-    border-radius: 28px;
-    box-shadow: 0 0 48px rgba(60,198,227,.35);
-  }
-  h1 { font-size: 2.6rem; margin-top: 20px; font-weight: 800; color: var(--sand); }
-  .tagline { color: var(--lime); font-size: 1.25rem; margin-top: 6px; }
-  section { padding: 32px 0; }
-  h2 { font-size: 1.5rem; margin-bottom: 20px; color: var(--cyan); font-weight: 700; }
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-  .card {
-    background: var(--card);
-    border-radius: 20px;
-    padding: 24px;
-    border-top: 4px solid var(--cyan);
-  }
-  .card:nth-child(2) { border-top-color: var(--lime); }
-  .card:nth-child(3) { border-top-color: var(--sand); }
-  .card .emoji { font-size: 2rem; }
-  .card h3 { margin: 10px 0 6px; font-size: 1.1rem; }
+  header { text-align: center; padding: 60px 0 44px; }
+  header img { width: 150px; height: 150px; }
+  h1 { font-size: 3.4rem; margin-top: 18px; letter-spacing: .5px; }
+  .tagline { margin-top: 12px; }
+
+  .band { background: var(--band); }
+  .band .wrap { padding-top: 8px; padding-bottom: 40px; }
+  h2 { font-size: 1.6rem; margin: 28px 0 22px; color: var(--cyan); text-align: center; }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+  .steps .card:nth-child(1) { transform: rotate(-1.5deg); border-top-color: var(--cyan); }
+  .steps .card:nth-child(2) { transform: rotate(1.2deg); border-top-color: var(--lime); }
+  .steps .card:nth-child(3) { transform: rotate(-1deg); border-top-color: var(--gold); }
+  .card h3 { margin: 6px 0; font-size: 1.15rem; }
   .card p { color: var(--muted); font-size: .95rem; }
-  .get {
-    background: var(--card);
-    border-radius: 16px;
-    padding: 28px;
+
+  .magic {
     text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 40px auto 6px;
+    max-width: 560px;
+    line-height: 1.35;
   }
-  .get p { color: var(--muted); }
-  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 40px 0 56px; }
+  .magic .buzz { color: var(--cyan); }
+  .magic .find { color: var(--lime); }
+  .magic .prize { color: var(--gold); }
+
+  .get {
+    text-align: center;
+    padding: 44px 24px 8px;
+  }
+  .get p { color: var(--muted); max-width: 560px; margin: 0 auto 12px; }
+
+  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 44px 0 56px; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <img src="/assets/logo.png?v=2" alt="X-Marks logo">
-    <h1>X-Marks</h1>
-    <p class="tagline">Get the kids out and about!</p>
-  </header>
 
-  <section>
+<header class="xs">
+  <i style="top:12%; left:8%;  font-size:2.2rem; transform:rotate(14deg)">✕</i>
+  <i style="top:58%; left:14%; font-size:1.4rem; transform:rotate(-18deg)">✕</i>
+  <i style="top:20%; right:10%; font-size:1.8rem; transform:rotate(-10deg)">✕</i>
+  <i style="top:66%; right:7%;  font-size:2.6rem; transform:rotate(22deg)">✕</i>
+  <i style="top:84%; left:44%;  font-size:1.2rem; transform:rotate(8deg)">✕</i>
+  <div class="wrap">
+    <img class="logo bob" src="/assets/logo.png?v=2" alt="X-Marks logo">
+    <h1 class="wordmark"><span class="x">X</span>-Marks</h1>
+    <p class="tagline"><span class="sticker">Get the kids out and about!</span></p>
+  </div>
+</header>
+
+<svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0,30 C240,60 480,0 720,20 C960,45 1200,10 1440,32 L1440,60 L0,60 Z" fill="#0c1a26"/>
+</svg>
+
+<div class="band">
+  <div class="wrap">
     <h2>How it works</h2>
     <div class="steps">
       <div class="card">
-        <div class="emoji">🗺️</div>
-        <h3>Make a hunt</h3>
+        <span class="badge" style="background:var(--cyan)">1</span>
+        <h3>🗺️ Make a hunt</h3>
         <p>Drop treasure points on a map, name the hunt, and write down the prize. It stays secret until the hunt is solved.</p>
       </div>
       <div class="card">
-        <div class="emoji">💬</div>
-        <h3>Send it</h3>
-        <p>Share the hunt over iMessage, WhatsApp or anything else. No accounts, no servers — the whole hunt travels inside the link.</p>
+        <span class="badge" style="background:var(--lime)">2</span>
+        <h3>💬 Send it</h3>
+        <p>Share over iMessage, WhatsApp or anything else. No accounts, no servers — the whole hunt travels inside an encrypted link.</p>
       </div>
       <div class="card">
-        <div class="emoji">🧭</div>
-        <h3>Hunt it down</h3>
-        <p>The map shows rough zones, never exact spots. Get within 25&nbsp;m and a compass appears — point the phone the right way and it buzzes and pings. Find every point and the prize is revealed!</p>
+        <span class="badge" style="background:var(--gold)">3</span>
+        <h3>🧭 Hunt it down</h3>
+        <p>The map shows rough zones, never exact spots. Get close and a compass appears to point the way.</p>
       </div>
     </div>
-  </section>
 
-  <section>
-    <div class="get">
-      <h2>Get the app</h2>
-      <p>X-Marks is currently in family testing and installed directly by the hunt maker. If someone sent you a hunt link, ask them to set the app up on your phone — then tap the link again and the hunt jumps straight in.</p>
-    </div>
-  </section>
-
-  <footer>
-    No accounts. No tracking. No servers. Hunts are encrypted and live only on
-    your phones and inside the links you share.<br>
-    <a href="/privacy/" style="color: var(--cyan)">Privacy policy</a>
-  </footer>
+    <p class="magic">
+      Point the phone the right way and it
+      <span class="buzz">BUZZES 📳</span> …
+      walk the treasure down and it
+      <span class="find">PINGS ✨</span> …
+      find every X and the
+      <span class="prize">PRIZE IS REVEALED! 🏆</span>
+    </p>
+  </div>
 </div>
+
+<svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" style="transform:scaleY(-1)" aria-hidden="true">
+  <path d="M0,30 C240,60 480,0 720,20 C960,45 1200,10 1440,32 L1440,60 L0,60 Z" fill="#0c1a26"/>
+</svg>
+
+<section class="get">
+  <h2 class="wordmark" style="font-size:1.6rem">Get <span class="x">X</span>-Marks</h2>
+  <p>X-Marks is currently in family testing and installed directly by the hunt maker. If someone sent you a hunt link, ask them to set the app up on your phone — then tap the link again and the hunt jumps straight in.</p>
+</section>
+
+<footer>
+  No accounts. No tracking. No servers. Hunts are encrypted and live only on
+  your phones and inside the links you share.<br>
+  Made for little pirates. 🏴‍☠️<br>
+  <a href="/privacy/">Privacy policy</a>
+</footer>
+
 </body>
 </html>
