@@ -270,6 +270,7 @@
 				CODE_SIGN_ENTITLEMENTS = TreasureHunt/TreasureHunt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UPF9A27355;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TreasureHunt/Info.plist;
@@ -294,6 +295,7 @@
 				CODE_SIGN_ENTITLEMENTS = TreasureHunt/TreasureHunt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UPF9A27355;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TreasureHunt/Info.plist;
