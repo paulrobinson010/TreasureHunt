@@ -24,16 +24,25 @@ struct ContentView: View {
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)
                 if store.hunts.isEmpty {
-                    ContentUnavailableView {
-                        Label("No treasure hunts yet", systemImage: "map")
-                    } description: {
+                    VStack(spacing: 10) {
+                        Text("🏴‍☠️")
+                            .font(.system(size: 56))
+                        Text("No treasure hunts yet!")
+                            .font(.fun(22, .bold))
+                            .foregroundStyle(Color.brandSand)
                         Text("Make a hunt with + and send it to your hunters, or import one that was sent to you.")
+                            .font(.fun(14))
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 24)
                     .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
-                huntSection("Hunts to solve", hunts: toSolve)
-                huntSection("Solved", hunts: solved)
-                huntSection("Made by me", hunts: mine)
+                huntSection("Hunts to solve", emoji: "🧭", color: .brandCyan, hunts: toSolve)
+                huntSection("Solved", emoji: "🏆", color: .brandSand, hunts: solved)
+                huntSection("Made by me", emoji: "🗺️", color: .brandLime, hunts: mine)
             }
             .scrollContentBackground(.hidden)
             .background(OceanBackground())
@@ -44,6 +53,15 @@ struct ContentView: View {
                 ToolbarItem(placement: .principal) {
                     Color.clear.frame(width: 1, height: 1)
                 }
+                #if targetEnvironment(simulator)
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        store.loadDemoData()
+                    } label: {
+                        Label("Demo", systemImage: "wand.and.stars")
+                    }
+                }
+                #endif
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         importing = true
@@ -76,9 +94,9 @@ struct ContentView: View {
     }
 
     @ViewBuilder
-    private func huntSection(_ title: String, hunts: [Hunt]) -> some View {
+    private func huntSection(_ title: String, emoji: String, color: Color, hunts: [Hunt]) -> some View {
         if !hunts.isEmpty {
-            Section(title) {
+            Section {
                 ForEach(hunts) { hunt in
                     NavigationLink {
                         HuntDetailView(huntID: hunt.id)
@@ -92,6 +110,14 @@ struct ContentView: View {
                     }
                     .listRowBackground(Color.brandCard)
                 }
+            } header: {
+                HStack(spacing: 6) {
+                    Text(emoji)
+                    Text(title)
+                        .font(.fun(15, .bold))
+                        .foregroundStyle(color)
+                }
+                .textCase(nil)
             }
         }
     }
@@ -134,13 +160,25 @@ struct HuntRow: View {
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(color)
             }
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text(hunt.name)
                     .font(.fun(17, .semibold))
                 Text(subtitle)
                     .font(.fun(12))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+                if hunt.points.count <= 12 {
+                    HStack(spacing: 4) {
+                        ForEach(Array(hunt.points.enumerated()), id: \.element.id) { index, point in
+                            Circle()
+                                .fill(hunt.isFound(point)
+                                      ? Color.candy[index % Color.candy.count]
+                                      : Color.white.opacity(0.15))
+                                .frame(width: 8, height: 8)
+                        }
+                    }
+                    .padding(.top, 1)
+                }
             }
         }
     }

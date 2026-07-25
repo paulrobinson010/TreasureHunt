@@ -37,5 +37,6 @@ struct PrizeRevealView: View {
         .padding(.vertical, 40)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(OceanBackground())
+        .overlay(ConfettiView())
     }
 }

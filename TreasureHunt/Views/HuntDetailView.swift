@@ -36,12 +36,15 @@ struct CreatedHuntView: View {
             Map(initialPosition: .region(hunt.pointsRegion)) {
                 UserAnnotation()
                 ForEach(Array(hunt.points.enumerated()), id: \.element.id) { index, point in
-                    Marker(
+                    Annotation(
                         hunt.isFound(point) ? "Found!" : "Point \(index + 1)",
-                        systemImage: hunt.isFound(point) ? "checkmark" : "mappin",
                         coordinate: point.coordinate
-                    )
-                    .tint(hunt.isFound(point) ? .green : Color.brandRed)
+                    ) {
+                        LogoMarker(
+                            badge: hunt.isFound(point) ? .found : .number(index + 1),
+                            ring: hunt.isFound(point) ? .green : .brandRed
+                        )
+                    }
                 }
             }
             .mapStyle(mapFlavor.style)

@@ -36,7 +36,7 @@ struct CompassView: View {
                 .rotationEffect(.degrees(pointerDelta ?? 0))
                 .animation(.easeInOut(duration: 0.2), value: pointerDelta)
             if let distance {
-                Text(String(format: "%.0f m", distance))
+                Text(DistanceText.string(distance))
                     .font(.fun(20).monospacedDigit())
             }
             Text(onTarget

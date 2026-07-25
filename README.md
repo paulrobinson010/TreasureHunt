@@ -101,6 +101,29 @@ self-hosted on the website at `docs/assets/fonts/`, so no font CDN is
 involved. The app opens with a static launch screen (logo on navy) that hands
 over to an animated splash (`SplashView.swift`).
 
+## Demo mode & screenshots (simulator only)
+
+Run the app in the iOS simulator and a **Demo** wand button appears in the
+home toolbar (it's compiled out of device builds). Tapping it seeds three
+Central Park hunts: one mid-hunt (2/4 found), one solved (prize + confetti
+ready), and one "made by me" with a progress report arrived — instant
+screenshot material for the site and App Store.
+
+To play the hunt in the simulator, drive the location:
+
+- Quick: Simulator menu → Features → Location → Custom Location…
+  (Bethesda Fountain is 40.76593, −73.97106).
+- Full walkthrough: add `Demo/CentralParkWalk.gpx` to the Xcode project
+  (uncheck target membership), then Debug → Simulate Location → CentralParkWalk
+  while running. The blue dot strolls The Mall → Bethesda Fountain →
+  Bow Bridge → Belvedere Castle → Alice in Wonderland, finding the two
+  remaining points on the way — trail, detector, fanfares, confetti and all.
+  Compass heading isn't simulated, so the pointing-buzz is best captured on a
+  real phone.
+
+Distances show in the local convention automatically (metres for metric
+locales, feet/miles for the US) via MKDistanceFormatter.
+
 ## Tuning the game
 
 All gameplay thresholds live in `TreasureHunt/Models/Config.swift`:

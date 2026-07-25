@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="X-Marks demo">
+  <!--
+    A walking route through the "Central Park Treasure" demo hunt:
+    The Mall → Bethesda Fountain → Bow Bridge → Belvedere Castle →
+    Alice in Wonderland. Xcode walks between waypoints at a pace set
+    by the timestamps.
+  -->
+  <wpt lat="40.76500" lon="-73.97250"><time>2026-07-25T10:00:00Z</time></wpt>
+  <wpt lat="40.76560" lon="-73.97160"><time>2026-07-25T10:01:15Z</time></wpt>
+  <wpt lat="40.76593" lon="-73.97106"><time>2026-07-25T10:02:30Z</time></wpt>
+  <wpt lat="40.76700" lon="-73.97150"><time>2026-07-25T10:03:45Z</time></wpt>
+  <wpt lat="40.77000" lon="-73.97250"><time>2026-07-25T10:06:00Z</time></wpt>
+  <wpt lat="40.77300" lon="-73.97300"><time>2026-07-25T10:08:15Z</time></wpt>
+  <wpt lat="40.77577" lon="-73.97187"><time>2026-07-25T10:10:30Z</time></wpt>
+  <wpt lat="40.77700" lon="-73.97100"><time>2026-07-25T10:11:45Z</time></wpt>
+  <wpt lat="40.77939" lon="-73.96920"><time>2026-07-25T10:14:00Z</time></wpt>
+  <wpt lat="40.77800" lon="-73.96800"><time>2026-07-25T10:15:15Z</time></wpt>
+  <wpt lat="40.77600" lon="-73.96700"><time>2026-07-25T10:16:30Z</time></wpt>
+  <wpt lat="40.77459" lon="-73.96654"><time>2026-07-25T10:17:45Z</time></wpt>
+</gpx>
