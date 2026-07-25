@@ -49,12 +49,18 @@ struct HuntPreviewView: View {
                     started = true
                 } label: {
                     Text(hunt.foundPointIDs.isEmpty
-                         ? "Start the hunt"
+                         ? "Start the hunt!"
                          : "Keep hunting (\(hunt.foundPointIDs.count)/\(hunt.points.count) found)")
+                        .font(.fun(18, .bold))
+                        .foregroundStyle(Color.brandNight)
                         .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(
+                            LinearGradient(colors: [.brandCyan, .brandLime],
+                                           startPoint: .leading, endPoint: .trailing),
+                            in: Capsule()
+                        )
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
             }
             .padding()
             .frame(maxWidth: .infinity)
