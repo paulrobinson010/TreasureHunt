@@ -14,32 +14,53 @@ struct CreateHuntView: View {
 
     private enum Field { case name, prize }
     @FocusState private var focusedField: Field?
+    @State private var mapCenter: CLLocationCoordinate2D?
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                MapReader { proxy in
-                    Map(position: $camera) {
-                        UserAnnotation()
-                        ForEach(Array(points.enumerated()), id: \.element.id) { index, point in
-                            Annotation("Point \(index + 1)", coordinate: point.coordinate) {
-                                Image(systemName: "\(min(index + 1, 50)).circle.fill")
-                                    .font(.title)
-                                    .foregroundStyle(.white, Color.brandRed)
-                            }
-                        }
-                    }
-                    .onTapGesture { position in
-                        focusedField = nil
-                        if let coordinate = proxy.convert(position, from: .local) {
-                            points.append(TreasurePoint(coordinate: coordinate))
+                Map(position: $camera) {
+                    UserAnnotation()
+                    ForEach(Array(points.enumerated()), id: \.element.id) { index, point in
+                        Annotation("Point \(index + 1)", coordinate: point.coordinate) {
+                            Image(systemName: "\(min(index + 1, 50)).circle.fill")
+                                .font(.title)
+                                .foregroundStyle(.white, Color.brandRed)
                         }
                     }
                 }
+                .onMapCameraChange(frequency: .continuous) { context in
+                    mapCenter = context.camera.centerCoordinate
+                }
+                .overlay {
+                    // Crosshair the map moves under — no tap gesture to fight
+                    // MapKit's pan/zoom.
+                    Image(systemName: "plus")
+                        .font(.system(size: 30, weight: .bold))
+                        .foregroundStyle(Color.brandRed)
+                        .shadow(color: .black.opacity(0.5), radius: 2)
+                        .allowsHitTesting(false)
+                }
+                .overlay(alignment: .bottom) {
+                    Button {
+                        focusedField = nil
+                        addPointAtCrosshair()
+                    } label: {
+                        Label("Drop point here", systemImage: "mappin.and.ellipse")
+                            .font(.fun(15, .semibold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 10)
+                            .background(Color.brandRed, in: Capsule())
+                            .shadow(radius: 4)
+                    }
+                    .disabled(mapCenter == nil)
+                    .padding(.bottom, 12)
+                }
                 .overlay(alignment: .top) {
                     Text(points.isEmpty
-                         ? "Tap the map to drop your first treasure point"
-                         : "\(points.count) point\(points.count == 1 ? "" : "s") placed — tap to add more")
+                         ? "Line up the crosshair and tap \"Drop point here\""
+                         : "\(points.count) point\(points.count == 1 ? "" : "s") placed — move the map to add more")
                         .font(.fun(13))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
@@ -89,6 +110,11 @@ struct CreateHuntView: View {
                 ShareHuntView(hunt: hunt)
             }
         }
+    }
+
+    private func addPointAtCrosshair() {
+        guard let mapCenter else { return }
+        points.append(TreasurePoint(coordinate: mapCenter))
     }
 
     private func save() {
