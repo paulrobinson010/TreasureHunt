@@ -53,6 +53,32 @@
   .magic .find { color: var(--lime); }
   .magic .prize { color: var(--gold); }
 
+  .shots {
+    padding: 44px 0 8px;
+    text-align: center;
+  }
+  .shots-row {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    padding: 10px 24px 22px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .shots-row img {
+    width: 220px;
+    height: auto;
+    flex-shrink: 0;
+    border-radius: 26px;
+    border: 4px solid var(--card);
+    box-shadow: 0 10px 28px rgba(0,0,0,.45);
+    scroll-snap-align: center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .shots-row img { transition: transform .2s ease; }
+    .shots-row img:hover { transform: translateY(-6px) rotate(-1deg); }
+  }
+
   .get {
     text-align: center;
     padding: 44px 24px 8px;
@@ -117,6 +143,17 @@
 <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" style="transform:scaleY(-1)" aria-hidden="true">
   <path d="M0,30 C240,60 480,0 720,20 C960,45 1200,10 1440,32 L1440,60 L0,60 Z" fill="#0c1a26"/>
 </svg>
+
+<section class="shots">
+  <h2>See it in action</h2>
+  <div class="shots-row">
+    <img src="/screenshots/1-web.jpg" alt="X-Marks home screen with treasure hunts to solve" loading="lazy">
+    <img src="/screenshots/2-web.jpg" alt="Making a hunt by dropping points on the map" loading="lazy">
+    <img src="/screenshots/3-web.jpg" alt="Hunting with the map, trail and treasure zones" loading="lazy">
+    <img src="/screenshots/4-web.jpg" alt="The compass pointing at a treasure" loading="lazy">
+    <img src="/screenshots/5-web.jpg" alt="Prize revealed with confetti" loading="lazy">
+  </div>
+</section>
 
 <section class="get">
   <h2 class="wordmark" style="font-size:1.6rem">Get <span class="x">X</span>-Marks</h2>
