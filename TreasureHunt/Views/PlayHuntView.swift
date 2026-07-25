@@ -13,6 +13,8 @@ struct PlayHuntView: View {
     @State private var activePoint: TreasurePoint?
     @State private var showPrize = false
     @State private var trail: [CLLocationCoordinate2D] = []
+    /// Current map rotation, so the guide arrow can point in screen space.
+    @State private var cameraHeading: Double = 0
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
 
     private var hunt: Hunt? { store.hunt(id: huntID) }
@@ -31,9 +33,7 @@ struct PlayHuntView: View {
                         ForEach(hunt.points) { point in
                             if hunt.isFound(point) {
                                 Annotation("Found!", coordinate: point.coordinate) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .font(.title)
-                                        .foregroundStyle(.white, .green)
+                                    LogoMarker(badge: .found, ring: .green)
                                 }
                             } else {
                                 MapCircle(center: point.displayCenter, radius: Config.displayRadius)
@@ -47,6 +47,17 @@ struct PlayHuntView: View {
                 .mapControls {
                     MapUserLocationButton()
                     MapCompass()
+                }
+                // Coarse threshold: the arrow only needs rough map rotation,
+                // and per-frame state writes would stutter gestures.
+                .onMapCameraChange(frequency: .continuous) { context in
+                    if abs(GeoMath.angleDelta(cameraHeading, context.camera.heading)) > 3 {
+                        cameraHeading = context.camera.heading
+                    }
+                }
+                .overlay(alignment: .top) {
+                    guidePointer(for: hunt)
+                        .padding(.top, 8)
                 }
                 .overlay(alignment: .topTrailing) {
                     VStack(spacing: 8) {
@@ -120,6 +131,31 @@ struct PlayHuntView: View {
         .padding()
         .frame(maxWidth: .infinity)
         .background(.ultraThinMaterial)
+    }
+
+    /// Floating arrow towards the nearest unfound zone (its fuzzy centre, so
+    /// nothing exact leaks). Hidden once the compass takes over in a zone.
+    @ViewBuilder
+    private func guidePointer(for hunt: Hunt) -> some View {
+        if !hunt.isSolved, activePoint == nil,
+           let location = locationManager.location,
+           let nearest = hunt.nearestUnfoundPoint(to: location.coordinate) {
+            let bearing = GeoMath.bearing(from: location.coordinate, to: nearest.displayCenter)
+            let distance = GeoMath.distance(from: location.coordinate, to: nearest.displayCenter)
+            HStack(spacing: 8) {
+                Image(systemName: "location.north.fill")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(Color.brandCyan)
+                    .rotationEffect(.degrees(GeoMath.angleDelta(cameraHeading, bearing)))
+                Text(String(format: "~%.0f m", (distance / 10).rounded() * 10))
+                    .font(.fun(15, .semibold))
+                    .monospacedDigit()
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial, in: Capsule())
+            .shadow(radius: 3)
+        }
     }
 
     private func progressMessage(for hunt: Hunt, url: URL) -> String {

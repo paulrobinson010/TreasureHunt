@@ -22,6 +22,49 @@ struct BrandWordmark: View {
     }
 }
 
+/// On-brand map marker: the island logo in a ringed circle, with an optional
+/// corner badge (point number, or a green tick once found).
+struct LogoMarker: View {
+    enum Badge {
+        case number(Int)
+        case found
+        case none
+    }
+
+    var badge: Badge = .none
+    var ring: Color = .brandRed
+
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            Image("AppLogo")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 38, height: 38)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(ring, lineWidth: 3))
+                .shadow(color: .black.opacity(0.4), radius: 3)
+            switch badge {
+            case .number(let n):
+                Text("\(n)")
+                    .font(.fun(12, .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 18, height: 18)
+                    .background(ring, in: Circle())
+                    .offset(x: 5, y: 5)
+            case .found:
+                Image(systemName: "checkmark")
+                    .font(.system(size: 10, weight: .black))
+                    .foregroundStyle(.white)
+                    .frame(width: 18, height: 18)
+                    .background(Color.green, in: Circle())
+                    .offset(x: 5, y: 5)
+            case .none:
+                EmptyView()
+            }
+        }
+    }
+}
+
 /// The night-ocean backdrop used behind every screen: navy gradient with
 /// faint glowing blobs of the island colours.
 struct OceanBackground: View {
