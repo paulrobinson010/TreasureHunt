@@ -39,24 +39,42 @@ enum ProgressSync {
 
     /// Hunter side: merge my found set onto the shared board. Fire-and-forget
     /// with a bounded conflict retry; the manual progress links remain the
-    /// fallback when iCloud isn't available.
-    static func push(hunt: Hunt, attempt: Int = 0) {
-        guard let token = hunt.syncToken, let keyData = hunt.syncKeyData, attempt <= 3 else { return }
+    /// fallback when iCloud isn't available. The optional completion reports
+    /// a human-readable outcome (used by the debug sync test).
+    static func push(hunt: Hunt, attempt: Int = 0, completion: (@MainActor (String) -> Void)? = nil) {
+        func finish(_ message: String) {
+            if let completion {
+                DispatchQueue.main.async { completion(message) }
+            }
+        }
+        guard let token = hunt.syncToken, let keyData = hunt.syncKeyData else {
+            finish("This hunt has no sync token — it was created before automatic updates. Make a fresh hunt.")
+            return
+        }
+        guard attempt <= 3 else {
+            finish("Gave up after repeated write conflicts.")
+            return
+        }
         let key = SymmetricKey(data: keyData)
         let id = recordID(for: token)
         database.fetch(withRecordID: id) { existing, _ in
             let record = existing ?? CKRecord(recordType: "XMarksProgress", recordID: id)
             var board = decodeBoard(record, key: key) ?? [:]
             board[hunterID] = HunterProgress(foundPointIDs: hunt.foundPointIDs, updatedAt: .now)
-            guard let sealed = seal(board, key: key) else { return }
+            guard let sealed = seal(board, key: key) else {
+                finish("Encryption failed.")
+                return
+            }
             record["payload"] = sealed
             database.save(record) { _, error in
                 if let ck = error as? CKError, ck.code == .serverRecordChanged {
-                    push(hunt: hunt, attempt: attempt + 1)
+                    push(hunt: hunt, attempt: attempt + 1, completion: completion)
                 } else if let error {
                     log.error("push failed: \(error.localizedDescription, privacy: .public)")
+                    finish("Push failed: \(error.localizedDescription)")
                 } else {
                     log.info("progress pushed for token \(token, privacy: .public)")
+                    finish("Pushed ✓ — record xmarks-progress-\(token) now exists in CloudKit (Development).")
                 }
             }
         }

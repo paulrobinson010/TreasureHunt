@@ -31,6 +31,9 @@ struct CreatedHuntView: View {
     let hunt: Hunt
     @State private var sharing = false
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
+    #if DEBUG
+    @State private var syncTestResult: String?
+    #endif
 
     var body: some View {
         VStack(spacing: 0) {
@@ -74,6 +77,22 @@ struct CreatedHuntView: View {
                     }
                 }
                 .listRowBackground(Color.brandCard)
+                #if DEBUG
+                Section("Sync test (debug builds only)") {
+                    Button("Test CloudKit sync now") {
+                        syncTestResult = "Testing…"
+                        ProgressSync.push(hunt: hunt) { outcome in
+                            syncTestResult = outcome
+                        }
+                    }
+                    if let syncTestResult {
+                        Text(syncTestResult)
+                            .font(.fun(12))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .listRowBackground(Color.brandCard)
+                #endif
             }
             .scrollContentBackground(.hidden)
             .background(OceanBackground())
