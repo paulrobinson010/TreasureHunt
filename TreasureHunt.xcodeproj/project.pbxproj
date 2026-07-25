@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		1A0000000000000000000005 /* TreasureHunt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TreasureHunt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A0000000000000000000005 /* TreasureHunt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "X-Marks.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -76,10 +76,10 @@
 			fileSystemSynchronizedGroups = (
 				1A0000000000000000000002 /* TreasureHunt */,
 			);
-			name = TreasureHunt;
+			name = "X-Marks";
 			packageProductDependencies = (
 			);
-			productName = TreasureHunt;
+			productName = "X-Marks";
 			productReference = 1A0000000000000000000005 /* TreasureHunt.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -269,7 +269,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TreasureHunt/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Treasure Hunt";
+				INFOPLIST_KEY_CFBundleDisplayName = "X-Marks";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -296,7 +296,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TreasureHunt/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Treasure Hunt";
+				INFOPLIST_KEY_CFBundleDisplayName = "X-Marks";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
