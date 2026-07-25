@@ -3,9 +3,9 @@
 Lets get the kids out and about!
 
 **X-Marks** (…the spot!) — a native SwiftUI iOS app for making and playing
-real-world GPS treasure hunts. The repo, bundle id, domain, `treasurehunt://`
-scheme and `.treasurehunt` file extension keep their original names; only the
-user-facing brand is X-Marks.
+real-world GPS treasure hunts. The repo, bundle id, `treasurehunt://` scheme
+and `.treasurehunt` file extension keep their original names; the user-facing
+brand is X-Marks and the site lives at x-marks.robbo-online.uk.
 A parent drops points on a map, adds a name and a prize, and sends the hunt to
 the kids over iMessage or WhatsApp. The kids hunt the points down with a fuzzy
 map, a compass, and a phone that buzzes when they point it the right way.
@@ -60,7 +60,7 @@ the hunt store is written with iOS complete file protection.
 
 Three ways a hunt can arrive, all handled automatically:
 
-- **Universal link (recommended)** — `https://treasurehunt.robbo-online.uk/hunt/?d=…`
+- **Universal link (recommended)** — `https://x-marks.robbo-online.uk/hunt/?d=…`
   is tappable in iMessage/WhatsApp and opens straight into the app. Phones
   without the app land on the website's fallback page instead.
 - **`.treasurehunt` file** — shared as an attachment; tapping it opens the app.
@@ -69,18 +69,18 @@ Three ways a hunt can arrive, all handled automatically:
 
 ## Website & universal links
 
-The site at https://treasurehunt.robbo-online.uk lives in `docs/` and deploys
+The site at https://x-marks.robbo-online.uk lives in `docs/` and deploys
 via GitHub Actions (`.github/workflows/pages.yml`) on every push to `main`.
 It serves the landing page, the hunt-link fallback page, the privacy policy
 (`/privacy/`), and the `apple-app-site-association` file that makes universal
 links work.
 
-**One manual step remains:** edit
-`docs/.well-known/apple-app-site-association` and replace `TEAMID` with your
-Apple Team ID (Xcode → target → Signing & Capabilities, under your team name;
-or developer.apple.com → Membership). If Xcode made you change the bundle id,
-update it there too. Then push, and delete + reinstall the app on each phone —
-iOS fetches the association file at install time.
+After changing the domain, the association file, or the bundle id, delete +
+reinstall the app on each phone — iOS validates associated domains at install
+time. Development builds fetch the association file straight from the site
+(the entitlement's `?mode=developer` suffix plus the phone's Associated
+Domains Development toggle); App Store/TestFlight builds go through Apple's
+CDN, which can lag a new domain by a few hours.
 
 ## Progress share-back
 

@@ -9,7 +9,9 @@ enum HuntShareCodec {
     /// Universal-link host — links are tappable in iMessage/WhatsApp and open
     /// straight into the app; the website is only a fallback for phones
     /// without the app installed.
-    static let webHost = "treasurehunt.robbo-online.uk"
+    static let webHost = "x-marks.robbo-online.uk"
+    /// Pre-rebrand host, still accepted on import so old links keep working.
+    static let legacyWebHost = "treasurehunt.robbo-online.uk"
 
     /// Only what the recipient needs — progress and role stay on each device.
     private struct Payload: Codable {
@@ -88,7 +90,7 @@ enum HuntShareCodec {
     /// progress report from a hunter.
     static func decode(url: URL) -> Decoded? {
         if url.scheme == "https" || url.scheme == "http",
-           url.host?.lowercased() == webHost,
+           isOurHost(url.host),
            url.pathComponents.count > 1, url.pathComponents[1] == "progress" {
             guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
                   let code = components.queryItems?.first(where: { $0.name == "p" })?.value,
@@ -115,7 +117,7 @@ enum HuntShareCodec {
             return hunt(fromData: data)
         }
         if url.scheme == "https" || url.scheme == "http" {
-            guard url.host?.lowercased() == webHost else { return nil }
+            guard isOurHost(url.host) else { return nil }
             // https://host/hunt/?d=<code>
             if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
                let code = components.queryItems?.first(where: { $0.name == "d" })?.value {
@@ -136,6 +138,11 @@ enum HuntShareCodec {
     static func hunt(fromCode code: String) -> Hunt? {
         guard let sealed = base64urlDecode(code) else { return nil }
         return hunt(fromData: sealed)
+    }
+
+    private static func isOurHost(_ host: String?) -> Bool {
+        let host = host?.lowercased()
+        return host == webHost || host == legacyWebHost
     }
 
     private static func base64urlDecode(_ code: String) -> Data? {
