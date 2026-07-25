@@ -27,6 +27,7 @@ struct HuntDetailView: View {
 
 /// The maker's view: exact points, prize, and re-share.
 struct CreatedHuntView: View {
+    @EnvironmentObject private var store: HuntStore
     let hunt: Hunt
     @State private var sharing = false
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
@@ -83,12 +84,25 @@ struct CreatedHuntView: View {
         .sheet(isPresented: $sharing) {
             ShareHuntView(hunt: hunt)
         }
+        // Live refresh while this screen is open; the task cancels on leave.
+        .task {
+            while !Task.isCancelled {
+                ProgressSync.fetch(hunt: hunt) { found in
+                    if let found {
+                        store.applyRemoteProgress(huntID: hunt.id, foundPointIDs: found)
+                    }
+                }
+                try? await Task.sleep(for: .seconds(20))
+            }
+        }
     }
 
     @ViewBuilder
     private var huntersProgress: some View {
         if hunt.foundPointIDs.isEmpty {
-            Text("Nothing found yet. When a hunter taps \"Send progress\" in their app, this map updates.")
+            Text(hunt.syncToken != nil
+                 ? "Nothing found yet — this map updates by itself as treasures are dug up. ✨"
+                 : "Nothing found yet. When a hunter taps \"Send progress\" in their app, this map updates.")
                 .font(.fun(13))
                 .foregroundStyle(.secondary)
         } else {

@@ -257,6 +257,10 @@ struct PlayHuntView: View {
         FeedbackManager.shared.stopDetector()
         activePoint = nil
         store.markFound(point, in: hunt)
+        // Automatic progress update — the maker's map refreshes itself.
+        if let updated = store.hunt(id: huntID) {
+            ProgressSync.push(hunt: updated)
+        }
         if store.hunt(id: huntID)?.isSolved == true {
             FeedbackManager.shared.solvedFanfare()
             showPrize = true

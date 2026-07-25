@@ -51,6 +51,16 @@
   (iMessage, WhatsApp, etc.). Those services handle the message under their
   own privacy policies.</p>
 
+  <h2>Automatic progress updates</h2>
+  <p>So the hunt maker's map can update as treasures are found, hunters'
+  progress (which points have been found — never live location) syncs through
+  <strong>Apple's iCloud</strong> as small <strong>end-to-end encrypted</strong>
+  records: the encryption key travels only inside the hunt's own encrypted
+  link, so iCloud, Apple, and the developer see only unreadable ciphertext
+  stored under a random, unguessable name. No account is created — the sync
+  rides on the device's existing iCloud sign-in, and phones without iCloud
+  simply fall back to the manual "Send progress" links.</p>
+
   <h2>This website</h2>
   <p>This site is a static page hosted on GitHub Pages. It exists to describe
   the app and to catch hunt links opened on phones without the app installed.
@@ -61,10 +71,12 @@
 
   <h2>Third parties</h2>
   <ul>
-    <li><strong>Apple Maps</strong> provides the map imagery in the app, under
+    <li><strong>Apple Maps</strong> provides the map imagery in the app, and
+        <strong>Apple iCloud (CloudKit)</strong> carries the encrypted progress
+        records, both under
         <a href="https://www.apple.com/legal/privacy/">Apple's privacy policy</a>.</li>
     <li>There are no other third parties. No data is sold or shared — the app
-        has no data to sell.</li>
+        has no readable data to sell.</li>
   </ul>
 
   <h2>Children</h2>

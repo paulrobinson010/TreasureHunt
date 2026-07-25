@@ -51,6 +51,12 @@ struct Hunt: Identifiable, Codable {
     var foundPointIDs: Set<UUID> = []
     /// When a hunter last sent progress back (hunts you created).
     var progressUpdatedAt: Date? = nil
+    /// Automatic progress sync (CloudKit): unguessable record token and the
+    /// end-to-end key. Travel inside the encrypted share payload, so maker
+    /// and hunters share them but iCloud never sees the key. Nil on hunts
+    /// shared before this feature — those use the manual progress links.
+    var syncToken: String? = nil
+    var syncKeyData: Data? = nil
 
     var isSolved: Bool {
         !points.isEmpty && foundPointIDs.count == points.count

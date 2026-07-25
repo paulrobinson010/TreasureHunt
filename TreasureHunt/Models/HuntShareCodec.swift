@@ -14,11 +14,15 @@ enum HuntShareCodec {
     static let legacyWebHost = "treasurehunt.robbo-online.uk"
 
     /// Only what the recipient needs — progress and role stay on each device.
+    /// The sync token/key ride along so hunters can publish automatic
+    /// progress updates the maker can read.
     private struct Payload: Codable {
         var id: UUID
         var name: String
         var prize: String
         var points: [TreasurePoint]
+        var syncToken: String?
+        var syncKey: Data?
     }
 
     /// A hunter's progress, sent back to the hunt maker (or a sibling's copy).
@@ -39,7 +43,8 @@ enum HuntShareCodec {
     /// JSON → zlib compress → AES-GCM encrypt. The wire format for both links and files.
     static func sealedData(for hunt: Hunt) throws -> Data {
         let raw = try JSONEncoder().encode(
-            Payload(id: hunt.id, name: hunt.name, prize: hunt.prize, points: hunt.points)
+            Payload(id: hunt.id, name: hunt.name, prize: hunt.prize, points: hunt.points,
+                    syncToken: hunt.syncToken, syncKey: hunt.syncKeyData)
         )
         let compressed = try (raw as NSData).compressed(using: .zlib) as Data
         return try HuntCrypto.encrypt(compressed)
@@ -163,7 +168,9 @@ enum HuntShareCodec {
             prize: payload.prize,
             points: payload.points,
             role: .received,
-            createdAt: .now
+            createdAt: .now,
+            syncToken: payload.syncToken,
+            syncKeyData: payload.syncKey
         )
     }
 }

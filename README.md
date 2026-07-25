@@ -82,14 +82,23 @@ time. Development builds fetch the association file straight from the site
 Domains Development toggle); App Store/TestFlight builds go through Apple's
 CDN, which can lag a new domain by a few hours.
 
-## Progress share-back
+## Progress updates
 
-There's no server, so the hunt maker can't watch live — instead, hunters send
-progress home the same way hunts travel out. The hunt map and prize screen
-have **Send progress** / **Tell the hunt maker!** buttons that share an
-encrypted `/progress/` link; tapping it on any phone that has the hunt merges
-the found points in (the maker's map shows green ticks and a "last update"
-time). It also syncs siblings' copies if they share it with each other.
+**Automatic (CloudKit):** hunts created since this feature carry a random
+sync token and an AES key inside their encrypted share payload. When a hunter
+digs up a point, their found-set is sealed with that key and saved to a
+CloudKit *public-database* record named by the token (`ProgressSync.swift`,
+modelled on CycleHUD's live tracking) — iCloud stores ciphertext only. The
+maker's created-hunt screen polls every 20 s while open and merges all
+hunters' finds. Requires the hunter's device to be signed into iCloud;
+before shipping to TestFlight/App Store, deploy the CloudKit schema to
+Production in the CloudKit Console (the `XMarksProgress` record type is
+created automatically on first run in Development).
+
+**Manual fallback:** the hunt map and prize screen keep **Send progress** /
+**Tell the hunt maker!** buttons that share an encrypted `/progress/` link;
+tapping it on any phone that has the hunt merges the found points in. Also
+syncs siblings' copies if they share with each other.
 
 ## Look and feel
 

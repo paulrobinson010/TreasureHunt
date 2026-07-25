@@ -1,3 +1,4 @@
+import CryptoKit
 import MapKit
 import SwiftUI
 
@@ -126,13 +127,16 @@ struct CreateHuntView: View {
     }
 
     private func save() {
+        let syncKey = SymmetricKey(size: .bits128).withUnsafeBytes { Data($0) }
         let hunt = Hunt(
             id: UUID(),
             name: name.trimmingCharacters(in: .whitespaces),
             prize: prize.trimmingCharacters(in: .whitespacesAndNewlines),
             points: points,
             role: .created,
-            createdAt: .now
+            createdAt: .now,
+            syncToken: ProgressSync.makeToken(),
+            syncKeyData: syncKey
         )
         store.add(hunt)
         sharing = hunt
