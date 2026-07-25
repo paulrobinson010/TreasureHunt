@@ -1,6 +1,9 @@
 import CloudKit
 import CryptoKit
 import Foundation
+import os
+
+private let log = Logger(subsystem: "com.paulrobinson.TreasureHunt2", category: "ProgressSync")
 
 /// Automatic progress updates, CycleHUD-style: hunters publish their found
 /// set to a CloudKit *public* database record named by an unguessable
@@ -50,6 +53,10 @@ enum ProgressSync {
             database.save(record) { _, error in
                 if let ck = error as? CKError, ck.code == .serverRecordChanged {
                     push(hunt: hunt, attempt: attempt + 1)
+                } else if let error {
+                    log.error("push failed: \(error.localizedDescription, privacy: .public)")
+                } else {
+                    log.info("progress pushed for token \(token, privacy: .public)")
                 }
             }
         }
@@ -62,7 +69,11 @@ enum ProgressSync {
             return
         }
         let key = SymmetricKey(data: keyData)
-        database.fetch(withRecordID: recordID(for: token)) { record, _ in
+        database.fetch(withRecordID: recordID(for: token)) { record, error in
+            if let ck = error as? CKError, ck.code != .unknownItem {
+                // unknownItem just means nobody has pushed yet — not an error.
+                log.error("fetch failed: \(ck.localizedDescription, privacy: .public)")
+            }
             let union = record.flatMap { decodeBoard($0, key: key) }
                 .map { board in board.values.reduce(into: Set<UUID>()) { $0.formUnion($1.foundPointIDs) } }
             DispatchQueue.main.async { completion(union) }
