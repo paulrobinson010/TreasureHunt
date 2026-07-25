@@ -13,7 +13,7 @@ struct ShareHuntView: View {
         NavigationStack {
             List {
                 Section {
-                    Text("Send this hunt over iMessage, WhatsApp or anything else. The hunt is encrypted and travels inside the link itself — tapping it opens straight into the X-Marks app. If a link won't tap, the kids can copy the whole message and use Import in their app, or you can send the file instead.")
+                    Text("Send this hunt over iMessage, WhatsApp or anything else. The hunt is encrypted and travels inside the link itself — tapping it opens straight into the X-Marks app. If a link won't tap, your hunters can copy the whole message and use Import in their app, or you can send the file instead.")
                         .font(.fun(13))
                         .foregroundStyle(.secondary)
                 }

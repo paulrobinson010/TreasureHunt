@@ -18,7 +18,7 @@ struct ContentView: View {
                     ContentUnavailableView {
                         Label("No treasure hunts yet", systemImage: "map")
                     } description: {
-                        Text("Make a hunt with + and send it to the kids, or import one that was sent to you.")
+                        Text("Make a hunt with + and send it to your hunters, or import one that was sent to you.")
                     }
                     .listRowBackground(Color.clear)
                 }

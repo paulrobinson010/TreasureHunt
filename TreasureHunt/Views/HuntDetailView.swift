@@ -66,7 +66,7 @@ struct CreatedHuntView: View {
                     Button {
                         sharing = true
                     } label: {
-                        Label("Share with the kids", systemImage: "square.and.arrow.up")
+                        Label("Share this hunt", systemImage: "square.and.arrow.up")
                     }
                 }
                 .listRowBackground(Color.brandCard)
@@ -85,7 +85,7 @@ struct CreatedHuntView: View {
     @ViewBuilder
     private var huntersProgress: some View {
         if hunt.foundPointIDs.isEmpty {
-            Text("Nothing found yet. When the kids tap \"Send progress\" in their app, this map updates.")
+            Text("Nothing found yet. When a hunter taps \"Send progress\" in their app, this map updates.")
                 .font(.fun(13))
                 .foregroundStyle(.secondary)
         } else {

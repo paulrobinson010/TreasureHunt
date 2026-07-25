@@ -23,21 +23,14 @@ struct SplashView: View {
             Circle().fill(Color.brandRed.opacity(0.18))
                 .frame(width: 200).blur(radius: 80).offset(x: -140, y: 280)
 
-            VStack(spacing: 18) {
-                Image("AppLogo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 190)
-                    .scaleEffect(appeared ? 1 : 0.35)
-                    .rotationEffect(.degrees(appeared ? 0 : -14))
-                BrandWordmark(size: 42)
-                    .opacity(appeared ? 1 : 0)
-                Text("…the spot!")
-                    .font(.fun(20, .medium))
-                    .foregroundStyle(Color.brandCyan)
-                    .opacity(appeared ? 1 : 0)
-            }
-            .animation(.spring(response: 0.55, dampingFraction: 0.55), value: appeared)
+            // The brand art carries the name and slogan itself.
+            Image("BrandLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 320)
+                .scaleEffect(appeared ? 1 : 0.35)
+                .rotationEffect(.degrees(appeared ? 0 : -14))
+                .animation(.spring(response: 0.55, dampingFraction: 0.55), value: appeared)
         }
         .onAppear { appeared = true }
     }
