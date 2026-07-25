@@ -33,6 +33,14 @@ map, a compass, and a phone that buzzes when they point it the right way.
 - **Run it on a real iPhone.** The simulator has no GPS walk-around, no
   compass, and no haptics — the whole game loop needs a real device outdoors.
 
+## Adding the app icon
+
+Save the logo as a 1024×1024 PNG (no transparency, square — iOS rounds the
+corners itself) named `AppIcon.png` and drop it into
+`TreasureHunt/Assets.xcassets/AppIcon.appiconset/`. That's it — the catalog
+already expects that filename. Until the file lands, Xcode shows a harmless
+missing-file warning.
+
 ## Sharing between phones
 
 Every phone playing needs the app installed (until it's on TestFlight or the
