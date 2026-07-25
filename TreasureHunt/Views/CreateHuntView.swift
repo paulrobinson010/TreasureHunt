@@ -15,6 +15,7 @@ struct CreateHuntView: View {
     private enum Field { case name, prize }
     @FocusState private var focusedField: Field?
     @State private var mapCenter: CLLocationCoordinate2D?
+    @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
 
     var body: some View {
         NavigationStack {
@@ -29,8 +30,13 @@ struct CreateHuntView: View {
                         }
                     }
                 }
+                .mapStyle(mapFlavor.style)
                 .onMapCameraChange(frequency: .continuous) { context in
                     mapCenter = context.camera.centerCoordinate
+                }
+                .overlay(alignment: .topTrailing) {
+                    MapStyleButton(flavor: $mapFlavor)
+                        .padding(8)
                 }
                 .overlay {
                     // Crosshair the map moves under — no tap gesture to fight

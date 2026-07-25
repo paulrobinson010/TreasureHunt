@@ -11,6 +11,7 @@ struct PlayHuntView: View {
     @State private var camera: MapCameraPosition = .userLocation(fallback: .automatic)
     @State private var activePoint: TreasurePoint?
     @State private var showPrize = false
+    @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
 
     private var hunt: Hunt? { store.hunt(id: huntID) }
 
@@ -34,6 +35,11 @@ struct PlayHuntView: View {
                         }
                     }
                     statusBar(for: hunt)
+                }
+                .mapStyle(mapFlavor.style)
+                .overlay(alignment: .topTrailing) {
+                    MapStyleButton(flavor: $mapFlavor)
+                        .padding(8)
                 }
                 .overlay {
                     if let activePoint, !hunt.isFound(activePoint) {

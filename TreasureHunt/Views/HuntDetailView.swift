@@ -29,6 +29,7 @@ struct HuntDetailView: View {
 struct CreatedHuntView: View {
     let hunt: Hunt
     @State private var sharing = false
+    @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
 
     var body: some View {
         VStack(spacing: 0) {
@@ -41,6 +42,11 @@ struct CreatedHuntView: View {
                     )
                     .tint(hunt.isFound(point) ? .green : Color.brandRed)
                 }
+            }
+            .mapStyle(mapFlavor.style)
+            .overlay(alignment: .topTrailing) {
+                MapStyleButton(flavor: $mapFlavor)
+                    .padding(8)
             }
             List {
                 Section("Hunters' progress") {

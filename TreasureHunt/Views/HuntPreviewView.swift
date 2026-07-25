@@ -7,6 +7,7 @@ struct HuntPreviewView: View {
     let hunt: Hunt
     @StateObject private var locationManager = LocationManager()
     @State private var started = false
+    @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
 
     var body: some View {
         Group {
@@ -26,6 +27,11 @@ struct HuntPreviewView: View {
                     MapCircle(center: center, radius: Config.previewRadius)
                         .foregroundStyle(Color.brandCyan.opacity(0.25))
                 }
+            }
+            .mapStyle(mapFlavor.style)
+            .overlay(alignment: .topTrailing) {
+                MapStyleButton(flavor: $mapFlavor)
+                    .padding(8)
             }
             VStack(spacing: 12) {
                 Text(hunt.name)
