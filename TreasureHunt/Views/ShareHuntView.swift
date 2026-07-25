@@ -17,6 +17,7 @@ struct ShareHuntView: View {
                         .font(.fun(13))
                         .foregroundStyle(.secondary)
                 }
+                .listRowBackground(Color.brandCard)
                 if let link {
                     Section("Send as link (recommended)") {
                         ShareLink(item: shareMessage(for: link)) {
@@ -29,6 +30,7 @@ struct ShareHuntView: View {
                             Label(copied ? "Copied!" : "Copy link", systemImage: copied ? "checkmark" : "doc.on.doc")
                         }
                     }
+                    .listRowBackground(Color.brandCard)
                 }
                 if let file {
                     Section("Send as file") {
@@ -36,8 +38,11 @@ struct ShareHuntView: View {
                             Label("Share \(hunt.name).treasurehunt", systemImage: "square.and.arrow.up")
                         }
                     }
+                    .listRowBackground(Color.brandCard)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(OceanBackground())
             .navigationTitle("Share \"\(hunt.name)\"")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

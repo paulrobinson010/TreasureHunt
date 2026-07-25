@@ -48,13 +48,17 @@ struct CreateHuntView: View {
                         TextField("Hunt name", text: $name)
                         TextField("Prize (revealed when solved)", text: $prize, axis: .vertical)
                     }
+                    .listRowBackground(Color.brandCard)
                     Section {
                         Button("Remove last point", role: .destructive) {
                             _ = points.popLast()
                         }
                         .disabled(points.isEmpty)
                     }
+                    .listRowBackground(Color.brandCard)
                 }
+                .scrollContentBackground(.hidden)
+                .background(OceanBackground())
                 .frame(height: 240)
             }
             .navigationTitle("New Hunt")

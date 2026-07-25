@@ -14,6 +14,7 @@ struct HuntDetailView: View {
             case .received:
                 if hunt.isSolved {
                     ScrollView { PrizeRevealView(hunt: hunt) }
+                        .background(OceanBackground())
                 } else {
                     HuntPreviewView(hunt: hunt)
                 }
@@ -43,24 +44,13 @@ struct CreatedHuntView: View {
             }
             List {
                 Section("Hunters' progress") {
-                    if hunt.foundPointIDs.isEmpty {
-                        Text("Nothing found yet. When the kids tap \"Send progress\" in their app, this map updates.")
-                            .font(.fun(13))
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text(hunt.isSolved
-                             ? "Solved — all \(hunt.points.count) treasures found! 🎉"
-                             : "\(hunt.foundPointIDs.count) of \(hunt.points.count) treasures found")
-                        if let updated = hunt.progressUpdatedAt {
-                            Text("Last update \(updated.formatted(date: .abbreviated, time: .shortened))")
-                                .font(.fun(12))
-                                .foregroundStyle(.secondary)
-                        }
-                    }
+                    huntersProgress
                 }
+                .listRowBackground(Color.brandCard)
                 Section("Prize") {
                     Text(hunt.prize.isEmpty ? "No prize written down" : hunt.prize)
                 }
+                .listRowBackground(Color.brandCard)
                 Section {
                     Button {
                         sharing = true
@@ -68,13 +58,34 @@ struct CreatedHuntView: View {
                         Label("Share with the kids", systemImage: "square.and.arrow.up")
                     }
                 }
+                .listRowBackground(Color.brandCard)
             }
+            .scrollContentBackground(.hidden)
+            .background(OceanBackground())
             .frame(height: 300)
         }
         .navigationTitle(hunt.name)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $sharing) {
             ShareHuntView(hunt: hunt)
+        }
+    }
+
+    @ViewBuilder
+    private var huntersProgress: some View {
+        if hunt.foundPointIDs.isEmpty {
+            Text("Nothing found yet. When the kids tap \"Send progress\" in their app, this map updates.")
+                .font(.fun(13))
+                .foregroundStyle(.secondary)
+        } else {
+            Text(hunt.isSolved
+                 ? "Solved — all \(hunt.points.count) treasures found! 🎉"
+                 : "\(hunt.foundPointIDs.count) of \(hunt.points.count) treasures found")
+            if let updated = hunt.progressUpdatedAt {
+                Text("Last update \(updated.formatted(date: .abbreviated, time: .shortened))")
+                    .font(.fun(12))
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }

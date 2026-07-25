@@ -38,11 +38,13 @@
     border-radius: 28px;
     box-shadow: 0 0 48px rgba(60,198,227,.35);
   }
-  h1 {
-    font-size: 2.6rem; margin-top: 20px; font-weight: 800;
-    background: linear-gradient(90deg, var(--cyan), var(--lime), var(--sand));
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; color: var(--cyan);
+  h1 { font-size: 2.6rem; margin-top: 20px; font-weight: 800; color: var(--sand); }
+  @supports ((-webkit-background-clip: text) and (-webkit-text-fill-color: transparent)) {
+    h1 {
+      background: linear-gradient(90deg, var(--cyan), var(--lime), var(--sand));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   }
   .tagline { color: var(--lime); font-size: 1.25rem; margin-top: 6px; }
   section { padding: 32px 0; }

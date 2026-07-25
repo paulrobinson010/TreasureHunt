@@ -35,6 +35,7 @@ struct PrizeRevealView: View {
             }
         }
         .padding(.vertical, 40)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(OceanBackground())
     }
 }

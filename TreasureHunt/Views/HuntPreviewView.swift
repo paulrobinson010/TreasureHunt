@@ -47,6 +47,8 @@ struct HuntPreviewView: View {
                 .controlSize(.large)
             }
             .padding()
+            .frame(maxWidth: .infinity)
+            .background(OceanBackground())
         }
         .navigationTitle("Preview")
         .navigationBarTitleDisplayMode(.inline)

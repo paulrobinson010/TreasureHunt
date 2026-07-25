@@ -7,15 +7,16 @@ struct TreasureHuntApp: App {
     @State private var showSplash = true
 
     init() {
-        // Put the toy-box font on navigation titles too — SwiftUI's
-        // environment font doesn't reach the navigation bar.
+        // Put the toy-box font and sand-gold colour on navigation titles —
+        // SwiftUI's environment font doesn't reach the navigation bar.
+        let sand = UIColor(red: 0.96, green: 0.79, blue: 0.32, alpha: 1)
         let nav = UINavigationBar.appearance()
-        if let font = UIFont(name: "Baloo2-SemiBold", size: 18) {
-            nav.titleTextAttributes = [.font: font]
-        }
-        if let font = UIFont(name: "Baloo2-Bold", size: 32) {
-            nav.largeTitleTextAttributes = [.font: font]
-        }
+        var title: [NSAttributedString.Key: Any] = [.foregroundColor: sand]
+        var largeTitle: [NSAttributedString.Key: Any] = [.foregroundColor: sand]
+        if let font = UIFont(name: "Baloo2-SemiBold", size: 18) { title[.font] = font }
+        if let font = UIFont(name: "Baloo2-Bold", size: 32) { largeTitle[.font] = font }
+        nav.titleTextAttributes = title
+        nav.largeTitleTextAttributes = largeTitle
     }
 
     var body: some Scene {
@@ -30,6 +31,8 @@ struct TreasureHuntApp: App {
                         .zIndex(1)
                 }
             }
+            .preferredColorScheme(.dark)
+            .tint(.brandCyan)
             .task {
                 try? await Task.sleep(for: .seconds(1.8))
                 withAnimation(.easeOut(duration: 0.45)) { showSplash = false }

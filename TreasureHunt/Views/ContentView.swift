@@ -20,11 +20,14 @@ struct ContentView: View {
                     } description: {
                         Text("Make a hunt with + and send it to the kids, or import one that was sent to you.")
                     }
+                    .listRowBackground(Color.clear)
                 }
                 huntSection("Hunts to solve", hunts: toSolve)
                 huntSection("Solved", hunts: solved)
                 huntSection("Made by me", hunts: mine)
             }
+            .scrollContentBackground(.hidden)
+            .background(OceanBackground())
             .navigationTitle("Treasure Hunt")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -73,6 +76,7 @@ struct ContentView: View {
                             store.delete(hunt)
                         }
                     }
+                    .listRowBackground(Color.brandCard)
                 }
             }
         }
@@ -108,10 +112,14 @@ struct HuntRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.fun(20))
-                .foregroundStyle(color)
-                .frame(width: 28)
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.22))
+                    .frame(width: 40, height: 40)
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(color)
+            }
             VStack(alignment: .leading, spacing: 2) {
                 Text(hunt.name)
                     .font(.fun(17, .semibold))
