@@ -28,7 +28,7 @@ struct ContentView: View {
             }
             .scrollContentBackground(.hidden)
             .background(OceanBackground())
-            .navigationTitle("Treasure Hunt")
+            .navigationTitle("X-Marks")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {

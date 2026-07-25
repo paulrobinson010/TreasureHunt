@@ -5,12 +5,12 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Treasure Hunt</string>
+	<string>X-Marks</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>Treasure Hunt</string>
+			<string>X-Marks Hunt</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSHandlerRank</key>
@@ -51,7 +51,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Treasure Hunt uses your location to guide you to hidden treasure points.</string>
+	<string>X-Marks uses your location to guide you to hidden treasure points.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Baloo2.ttf</string>
@@ -75,7 +75,7 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Treasure Hunt</string>
+			<string>X-Marks Hunt</string>
 			<key>UTTypeIdentifier</key>
 			<string>com.paulrobinson.treasurehunt.hunt</string>
 			<key>UTTypeTagSpecification</key>

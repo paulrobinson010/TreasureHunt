@@ -42,7 +42,7 @@ struct TreasureHuntApp: App {
                 if let url = activity.webpageURL { handle(url: url) }
             }
             .alert(
-                "Treasure Hunt",
+                "X-Marks",
                 isPresented: Binding(
                     get: { importResult != nil },
                     set: { if !$0 { importResult = nil } }

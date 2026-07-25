@@ -2,7 +2,10 @@
 
 Lets get the kids out and about!
 
-A native SwiftUI iOS app for making and playing real-world GPS treasure hunts.
+**X-Marks** (…the spot!) — a native SwiftUI iOS app for making and playing
+real-world GPS treasure hunts. The repo, bundle id, domain, `treasurehunt://`
+scheme and `.treasurehunt` file extension keep their original names; only the
+user-facing brand is X-Marks.
 A parent drops points on a map, adds a name and a prize, and sends the hunt to
 the kids over iMessage or WhatsApp. The kids hunt the points down with a fuzzy
 map, a compass, and a phone that buzzes when they point it the right way.
