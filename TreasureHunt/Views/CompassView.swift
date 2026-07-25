@@ -29,7 +29,7 @@ struct CompassView: View {
     var body: some View {
         VStack(spacing: 14) {
             Text("You're close!")
-                .font(.headline)
+                .font(.fun(17, .semibold))
             Image(systemName: "location.north.fill")
                 .font(.system(size: 72))
                 .foregroundStyle(onTarget ? .green : .secondary)
@@ -37,12 +37,12 @@ struct CompassView: View {
                 .animation(.easeInOut(duration: 0.2), value: pointerDelta)
             if let distance {
                 Text(String(format: "%.0f m", distance))
-                    .font(.title3.monospacedDigit())
+                    .font(.fun(20).monospacedDigit())
             }
             Text(onTarget
                  ? "Keep going — you're pointing right at it!"
                  : "Turn slowly until the phone buzzes")
-                .font(.footnote)
+                .font(.fun(13))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }

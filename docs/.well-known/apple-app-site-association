@@ -5,11 +5,14 @@
       {
         "appIDs": ["UPF9A27355.com.paulrobinson.TreasureHunt"],
         "appID": "UPF9A27355.com.paulrobinson.TreasureHunt",
-        "paths": ["/hunt", "/hunt/", "/hunt/*"],
+        "paths": ["/hunt", "/hunt/", "/hunt/*", "/progress", "/progress/", "/progress/*"],
         "components": [
           { "/": "/hunt" },
           { "/": "/hunt/" },
-          { "/": "/hunt/*" }
+          { "/": "/hunt/*" },
+          { "/": "/progress" },
+          { "/": "/progress/" },
+          { "/": "/progress/*" }
         ]
       }
     ]

@@ -37,6 +37,16 @@ final class HuntStore: ObservableObject {
         save()
     }
 
+    /// Merges a hunter's progress report into any copy of that hunt on this
+    /// phone. Returns the updated hunt, or nil if we don't have it.
+    func applyProgress(_ report: HuntShareCodec.ProgressReport) -> Hunt? {
+        guard let index = hunts.firstIndex(where: { $0.id == report.huntID }) else { return nil }
+        hunts[index].foundPointIDs.formUnion(report.foundPointIDs)
+        hunts[index].progressUpdatedAt = .now
+        save()
+        return hunts[index]
+    }
+
     func markFound(_ point: TreasurePoint, in hunt: Hunt) {
         guard let index = hunts.firstIndex(where: { $0.id == hunt.id }) else { return }
         hunts[index].foundPointIDs.insert(point.id)

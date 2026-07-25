@@ -65,24 +65,34 @@ struct PlayHuntView: View {
         VStack(spacing: 6) {
             if locationManager.authorization == .denied {
                 Text("Location access is off — turn it on in Settings to play")
-                    .font(.footnote)
+                    .font(.fun(13))
                     .foregroundStyle(.red)
             }
             Text("\(hunt.foundPointIDs.count) of \(hunt.points.count) found")
-                .font(.headline)
+                .font(.fun(17, .semibold))
             if hunt.isSolved {
                 Button("Show my prize! 🎁") { showPrize = true }
                     .buttonStyle(.borderedProminent)
                     .tint(.brandRed)
             } else if let hint = hint(for: hunt) {
                 Text(hint)
-                    .font(.footnote)
+                    .font(.fun(13))
                     .foregroundStyle(.secondary)
+            }
+            if !hunt.foundPointIDs.isEmpty, let url = try? HuntShareCodec.progressURL(for: hunt) {
+                ShareLink(item: progressMessage(for: hunt, url: url)) {
+                    Label("Send progress to the hunt maker", systemImage: "paperplane.fill")
+                        .font(.fun(13))
+                }
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background(.ultraThinMaterial)
+    }
+
+    private func progressMessage(for hunt: Hunt, url: URL) -> String {
+        "🧭 \"\(hunt.name)\": I've found \(hunt.foundPointIDs.count) of \(hunt.points.count) treasures! Tap to update your map: \(url.absoluteString)"
     }
 
     private func hint(for hunt: Hunt) -> String? {

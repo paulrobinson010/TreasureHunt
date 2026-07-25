@@ -81,20 +81,23 @@ struct ContentView: View {
     private func runImport() {
         let text = importText.trimmingCharacters(in: .whitespacesAndNewlines)
         importText = ""
-        var hunt: Hunt?
+        var decoded: HuntShareCodec.Decoded?
         // The link is usually buried in a longer message — fish it out.
         if let range = text.range(of: "https://[^\\s]+", options: .regularExpression),
            let url = URL(string: String(text[range])) {
-            hunt = HuntShareCodec.hunt(fromURL: url)
+            decoded = HuntShareCodec.decode(url: url)
         } else if let range = text.range(of: "treasurehunt://[A-Za-z0-9_\\-/]+", options: .regularExpression),
                   let url = URL(string: String(text[range])) {
-            hunt = HuntShareCodec.hunt(fromURL: url)
-        } else {
-            hunt = HuntShareCodec.hunt(fromCode: text)
+            decoded = HuntShareCodec.decode(url: url)
+        } else if let hunt = HuntShareCodec.hunt(fromCode: text) {
+            decoded = .hunt(hunt)
         }
-        if let hunt {
+        switch decoded {
+        case .hunt(let hunt):
             store.importHunt(hunt)
-        } else {
+        case .progress(let report):
+            if store.applyProgress(report) == nil { importFailed = true }
+        case nil:
             importFailed = true
         }
     }
@@ -106,14 +109,14 @@ struct HuntRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.title3)
+                .font(.fun(20))
                 .foregroundStyle(color)
                 .frame(width: 28)
             VStack(alignment: .leading, spacing: 2) {
                 Text(hunt.name)
-                    .font(.headline)
+                    .font(.fun(17, .semibold))
                 Text(subtitle)
-                    .font(.caption)
+                    .font(.fun(12))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }

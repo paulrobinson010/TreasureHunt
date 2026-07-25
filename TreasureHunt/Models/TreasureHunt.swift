@@ -49,6 +49,8 @@ struct Hunt: Identifiable, Codable {
     var role: HuntRole
     var createdAt: Date
     var foundPointIDs: Set<UUID> = []
+    /// When a hunter last sent progress back (hunts you created).
+    var progressUpdatedAt: Date? = nil
 
     var isSolved: Bool {
         !points.isEmpty && foundPointIDs.count == points.count

@@ -6,6 +6,12 @@
 <title>Privacy — Treasure Hunt</title>
 <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
 <style>
+  @font-face {
+    font-family: 'Baloo 2';
+    src: url('/assets/fonts/Baloo2.ttf') format('truetype');
+    font-weight: 400 800;
+    font-display: swap;
+  }
   :root {
     /* Palette from the app icon: island at night */
     --bg: #04070f;
@@ -19,8 +25,8 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
+    font-family: 'Baloo 2', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(900px 420px at 50% -10%, #0a2a3a, var(--bg));
     color: var(--text);
     line-height: 1.7;
   }

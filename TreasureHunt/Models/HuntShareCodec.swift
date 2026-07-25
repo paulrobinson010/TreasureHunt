@@ -19,6 +19,19 @@ enum HuntShareCodec {
         var points: [TreasurePoint]
     }
 
+    /// A hunter's progress, sent back to the hunt maker (or a sibling's copy).
+    struct ProgressReport: Codable {
+        var huntID: UUID
+        var name: String
+        var foundPointIDs: Set<UUID>
+    }
+
+    /// Everything a shared link can contain.
+    enum Decoded {
+        case hunt(Hunt)
+        case progress(ProgressReport)
+    }
+
     // MARK: Encoding
 
     /// JSON → zlib compress → AES-GCM encrypt. The wire format for both links and files.
@@ -32,14 +45,30 @@ enum HuntShareCodec {
 
     /// https://treasurehunt.robbo-online.uk/hunt/?d=<base64url sealed payload>
     static func url(for hunt: Hunt) throws -> URL {
-        let code = try sealedData(for: hunt).base64EncodedString()
-            .replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "/", with: "_")
-            .replacingOccurrences(of: "=", with: "")
-        guard let url = URL(string: "https://\(webHost)/hunt/?d=\(code)") else {
+        guard let url = URL(string: "https://\(webHost)/hunt/?d=\(base64url(try sealedData(for: hunt)))") else {
             throw CocoaError(.coderInvalidValue)
         }
         return url
+    }
+
+    /// https://treasurehunt.robbo-online.uk/progress/?p=<base64url sealed report>
+    static func progressURL(for hunt: Hunt) throws -> URL {
+        let raw = try JSONEncoder().encode(
+            ProgressReport(huntID: hunt.id, name: hunt.name, foundPointIDs: hunt.foundPointIDs)
+        )
+        let compressed = try (raw as NSData).compressed(using: .zlib) as Data
+        let sealed = try HuntCrypto.encrypt(compressed)
+        guard let url = URL(string: "https://\(webHost)/progress/?p=\(base64url(sealed))") else {
+            throw CocoaError(.coderInvalidValue)
+        }
+        return url
+    }
+
+    private static func base64url(_ data: Data) -> String {
+        data.base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 
     /// Writes a shareable .treasurehunt file (same sealed format as links)
@@ -54,6 +83,27 @@ enum HuntShareCodec {
     }
 
     // MARK: Decoding
+
+    /// Routes any incoming link/file to what it contains: a hunt, or a
+    /// progress report from a hunter.
+    static func decode(url: URL) -> Decoded? {
+        if url.scheme == "https" || url.scheme == "http",
+           url.host?.lowercased() == webHost,
+           url.pathComponents.count > 1, url.pathComponents[1] == "progress" {
+            guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                  let code = components.queryItems?.first(where: { $0.name == "p" })?.value,
+                  let report = progressReport(fromCode: code) else { return nil }
+            return .progress(report)
+        }
+        return hunt(fromURL: url).map { .hunt($0) }
+    }
+
+    static func progressReport(fromCode code: String) -> ProgressReport? {
+        guard let sealed = base64urlDecode(code),
+              let compressed = try? HuntCrypto.decrypt(sealed),
+              let raw = try? (compressed as NSData).decompressed(using: .zlib) as Data else { return nil }
+        return try? JSONDecoder().decode(ProgressReport.self, from: raw)
+    }
 
     /// Handles universal links, legacy treasurehunt:// links, and opened
     /// .treasurehunt files.
@@ -84,12 +134,16 @@ enum HuntShareCodec {
     }
 
     static func hunt(fromCode code: String) -> Hunt? {
+        guard let sealed = base64urlDecode(code) else { return nil }
+        return hunt(fromData: sealed)
+    }
+
+    private static func base64urlDecode(_ code: String) -> Data? {
         var base64 = code
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
         base64 += String(repeating: "=", count: (4 - base64.count % 4) % 4)
-        guard let sealed = Data(base64Encoded: base64) else { return nil }
-        return hunt(fromData: sealed)
+        return Data(base64Encoded: base64)
     }
 
     static func hunt(fromData sealed: Data) -> Hunt? {

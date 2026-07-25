@@ -29,11 +29,11 @@ struct HuntPreviewView: View {
             }
             VStack(spacing: 12) {
                 Text(hunt.name)
-                    .font(.title2.bold())
+                    .font(.fun(24, .bold))
                 Text("\(hunt.points.count) treasure point\(hunt.points.count == 1 ? "" : "s") to find")
                     .foregroundStyle(.secondary)
                 Label("The prize is revealed when you find every point", systemImage: "gift")
-                    .font(.footnote)
+                    .font(.fun(13))
                     .foregroundStyle(.secondary)
                 Button {
                     started = true

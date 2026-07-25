@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>You've been sent a treasure hunt!</title>
+<title>Treasure hunt progress update!</title>
 <link rel="icon" type="image/png" href="/assets/favicon.png?v=2">
 <style>
   @font-face {
@@ -34,16 +34,16 @@
   .wrap { max-width: 560px; margin: 0 auto; padding: 48px 24px; }
   img.logo { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 0 40px rgba(60,198,227,.35); }
   h1 { font-size: 1.7rem; margin: 18px 0 4px; }
-  ol {
+  p.lead { color: var(--muted); margin: 12px 0 24px; }
+  .box {
     text-align: left;
     background: var(--card);
-    border-radius: 16px;
-    padding: 20px 20px 20px 44px;
+    border-radius: 20px;
+    border-top: 4px solid var(--lime);
+    padding: 20px;
     margin: 24px 0;
     color: var(--muted);
   }
-  ol li { margin: 8px 0; }
-  ol li strong { color: var(--text); }
   button {
     background: var(--red);
     color: #fff;
@@ -62,20 +62,15 @@
 <body>
 <div class="wrap">
   <img class="logo" src="/assets/logo.png?v=2" alt="Treasure Hunt logo">
-  <h1>🏴‍☠️ You've been sent a treasure hunt!</h1>
-
-  <p>If the Treasure Hunt app were installed, this link would have opened straight into it. To play:</p>
-  <ol>
-    <li><strong>Get the app</strong> — ask whoever sent this to set Treasure Hunt up on your phone.</li>
-    <li><strong>Tap the link again</strong> — the hunt jumps straight into the app.</li>
-    <li>Or copy the link below and use <strong>Import</strong> inside the app.</li>
-  </ol>
-
-  <button id="copy">Copy hunt link</button>
-  <p class="note">The hunt inside this link is encrypted — only the Treasure Hunt app can read it. This website never sees or stores it.</p>
+  <h1>🧭 A hunter has sent a progress update!</h1>
+  <p class="lead">Open this link on the phone that has the hunt — normally the hunt maker's — and the Treasure Hunt app will update its map.</p>
+  <div class="box">
+    If the app were installed on this phone, the link would have opened straight into it. Tap the link again once the app is set up, or copy it and use <strong>Import</strong> inside the app.
+  </div>
+  <button id="copy">Copy update link</button>
+  <p class="note">The update inside this link is encrypted — only the Treasure Hunt app can read it. This website never sees or stores it.</p>
   <p class="note"><a href="/">What is Treasure Hunt?</a> · <a href="/privacy/">Privacy</a></p>
 </div>
-
 <script>
   document.getElementById('copy').addEventListener('click', async (e) => {
     try {

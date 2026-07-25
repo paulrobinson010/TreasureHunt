@@ -26,8 +26,17 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Treasure Hunt uses your location to guide you to hidden treasure points.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Baloo2.ttf</string>
+	</array>
 	<key>UILaunchScreen</key>
-	<dict/>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+		<key>UIImageName</key>
+		<string>AppLogo</string>
+	</dict>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

@@ -33,10 +33,31 @@ struct CreatedHuntView: View {
         VStack(spacing: 0) {
             Map(initialPosition: .automatic) {
                 ForEach(Array(hunt.points.enumerated()), id: \.element.id) { index, point in
-                    Marker("Point \(index + 1)", coordinate: point.coordinate)
+                    Marker(
+                        hunt.isFound(point) ? "Found!" : "Point \(index + 1)",
+                        systemImage: hunt.isFound(point) ? "checkmark" : "mappin",
+                        coordinate: point.coordinate
+                    )
+                    .tint(hunt.isFound(point) ? .green : Color.brandRed)
                 }
             }
             List {
+                Section("Hunters' progress") {
+                    if hunt.foundPointIDs.isEmpty {
+                        Text("Nothing found yet. When the kids tap \"Send progress\" in their app, this map updates.")
+                            .font(.fun(13))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text(hunt.isSolved
+                             ? "Solved — all \(hunt.points.count) treasures found! 🎉"
+                             : "\(hunt.foundPointIDs.count) of \(hunt.points.count) treasures found")
+                        if let updated = hunt.progressUpdatedAt {
+                            Text("Last update \(updated.formatted(date: .abbreviated, time: .shortened))")
+                                .font(.fun(12))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
                 Section("Prize") {
                     Text(hunt.prize.isEmpty ? "No prize written down" : hunt.prize)
                 }
@@ -48,7 +69,7 @@ struct CreatedHuntView: View {
                     }
                 }
             }
-            .frame(height: 230)
+            .frame(height: 300)
         }
         .navigationTitle(hunt.name)
         .navigationBarTitleDisplayMode(.inline)

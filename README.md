@@ -79,6 +79,25 @@ or developer.apple.com → Membership). If Xcode made you change the bundle id,
 update it there too. Then push, and delete + reinstall the app on each phone —
 iOS fetches the association file at install time.
 
+## Progress share-back
+
+There's no server, so the hunt maker can't watch live — instead, hunters send
+progress home the same way hunts travel out. The hunt map and prize screen
+have **Send progress** / **Tell the hunt maker!** buttons that share an
+encrypted `/progress/` link; tapping it on any phone that has the hunt merges
+the found points in (the maker's map shows green ticks and a "last update"
+time). It also syncs siblings' copies if they share it with each other.
+
+## Look and feel
+
+The theme comes straight from the app icon (see `TreasureHunt/Theme.swift`
+and the CSS variables in `docs/`): night navy, water cyan, island lime, sand
+gold, and X-marks-the-spot red. The typeface everywhere is **Baloo 2**
+(SIL Open Font License) — bundled in the app at `TreasureHunt/Fonts/` and
+self-hosted on the website at `docs/assets/fonts/`, so no font CDN is
+involved. The app opens with a static launch screen (logo on navy) that hands
+over to an animated splash (`SplashView.swift`).
+
 ## Tuning the game
 
 All gameplay thresholds live in `TreasureHunt/Models/Config.swift`:

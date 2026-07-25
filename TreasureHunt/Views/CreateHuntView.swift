@@ -36,7 +36,7 @@ struct CreateHuntView: View {
                     Text(points.isEmpty
                          ? "Tap the map to drop your first treasure point"
                          : "\(points.count) point\(points.count == 1 ? "" : "s") placed — tap to add more")
-                        .font(.footnote)
+                        .font(.fun(13))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(.ultraThinMaterial, in: Capsule())
