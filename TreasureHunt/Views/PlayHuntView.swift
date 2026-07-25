@@ -8,8 +8,11 @@ struct PlayHuntView: View {
     @StateObject private var locationManager = LocationManager()
     let huntID: UUID
 
+    /// Heading-up follow: the way you're walking is up on the screen.
+    @State private var camera: MapCameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
     @State private var activePoint: TreasurePoint?
     @State private var showPrize = false
+    @State private var trail: [CLLocationCoordinate2D] = []
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
 
     private var hunt: Hunt? { store.hunt(id: huntID) }
@@ -18,8 +21,13 @@ struct PlayHuntView: View {
         Group {
             if let hunt {
                 ZStack(alignment: .bottom) {
-                    Map(initialPosition: .userLocation(fallback: .automatic)) {
+                    Map(position: $camera) {
                         UserAnnotation()
+                        if trail.count > 1 {
+                            // Dotted footsteps, like the trail on the island logo.
+                            MapPolyline(coordinates: trail)
+                                .stroke(Color.brandRed, style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [1, 10]))
+                        }
                         ForEach(hunt.points) { point in
                             if hunt.isFound(point) {
                                 Annotation("Found!", coordinate: point.coordinate) {
@@ -41,8 +49,21 @@ struct PlayHuntView: View {
                     MapCompass()
                 }
                 .overlay(alignment: .topTrailing) {
-                    MapStyleButton(flavor: $mapFlavor)
-                        .padding(8)
+                    VStack(spacing: 8) {
+                        MapStyleButton(flavor: $mapFlavor)
+                        Button {
+                            camera = .userLocation(followsHeading: true, fallback: .automatic)
+                        } label: {
+                            Image(systemName: "location.north.line.fill")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(Color.brandCyan)
+                                .padding(10)
+                                .background(.ultraThinMaterial, in: Circle())
+                                .shadow(radius: 3)
+                        }
+                        .accessibilityLabel("Follow my walking direction")
+                    }
+                    .padding(8)
                 }
                 .overlay {
                     if let activePoint, !hunt.isFound(activePoint) {
@@ -118,7 +139,9 @@ struct PlayHuntView: View {
     }
 
     private func update(with location: CLLocation?) {
-        guard let location, let hunt, !hunt.isSolved,
+        guard let location else { return }
+        recordTrail(location)
+        guard let hunt, !hunt.isSolved,
               let nearest = hunt.nearestUnfoundPoint(to: location.coordinate) else { return }
         let distance = GeoMath.distance(from: location.coordinate, to: nearest.coordinate)
 
@@ -135,13 +158,26 @@ struct PlayHuntView: View {
         }
     }
 
+    /// Every few metres of walking becomes a dot on the trail.
+    private func recordTrail(_ location: CLLocation) {
+        if let last = trail.last {
+            guard GeoMath.distance(from: last, to: location.coordinate) > 4 else { return }
+        }
+        trail.append(location.coordinate)
+        if trail.count > 2000 {
+            trail.removeFirst(trail.count - 2000)
+        }
+    }
+
     private func found(_ point: TreasurePoint, in hunt: Hunt) {
         FeedbackManager.shared.stopBuzzing()
-        FeedbackManager.shared.success()
         activePoint = nil
         store.markFound(point, in: hunt)
         if store.hunt(id: huntID)?.isSolved == true {
+            FeedbackManager.shared.solvedFanfare()
             showPrize = true
+        } else {
+            FeedbackManager.shared.pointFanfare()
         }
     }
 }
