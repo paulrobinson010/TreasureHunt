@@ -15,7 +15,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				TreasureHunt.entitlements,
 			);
 			target = 1A0000000000000000000006 /* TreasureHunt */;
 		};
@@ -26,10 +25,6 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				1A0000000000000000000003 /* Exceptions for "TreasureHunt" folder in "TreasureHunt" target */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
 			);
 			path = TreasureHunt;
 			sourceTree = "<group>";
@@ -269,17 +264,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TreasureHunt/TreasureHunt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = UPF9A27355;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TreasureHunt/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Treasure Hunt";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.paulrobinson.TreasureHunt;
+				PRODUCT_BUNDLE_IDENTIFIER = com.paulrobinson.TreasureHunt2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -294,17 +291,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TreasureHunt/TreasureHunt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = UPF9A27355;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TreasureHunt/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Treasure Hunt";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.adventure-games";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.paulrobinson.TreasureHunt;
+				PRODUCT_BUNDLE_IDENTIFIER = com.paulrobinson.TreasureHunt2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
