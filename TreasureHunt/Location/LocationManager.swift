@@ -16,9 +16,22 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
         manager.headingFilter = 2
     }
 
+    /// Location only. Heading is opt-in via startHeading() — its updates fire
+    /// on every couple of degrees of phone movement, and screens re-render on
+    /// each one, so only the compass should subscribe.
     func start() {
         manager.requestWhenInUseAuthorization()
         beginUpdates()
+    }
+
+    func startHeading() {
+        if CLLocationManager.headingAvailable() {
+            manager.startUpdatingHeading()
+        }
+    }
+
+    func stopHeading() {
+        manager.stopUpdatingHeading()
     }
 
     func stop() {
@@ -34,9 +47,6 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
 
     private func beginUpdates() {
         manager.startUpdatingLocation()
-        if CLLocationManager.headingAvailable() {
-            manager.startUpdatingHeading()
-        }
     }
 
     // MARK: CLLocationManagerDelegate
@@ -53,6 +63,19 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
         authorization = manager.authorizationStatus
         if authorization == .authorizedWhenInUse || authorization == .authorizedAlways {
             beginUpdates()
+        }
+    }
+}
+
+/// One-shot permission request for screens that show the user dot on a map
+/// but don't need a stream of location updates (which would re-render the
+/// screen and stutter map gestures).
+enum LocationPermission {
+    private static let manager = CLLocationManager()
+
+    static func request() {
+        if manager.authorizationStatus == .notDetermined {
+            manager.requestWhenInUseAuthorization()
         }
     }
 }

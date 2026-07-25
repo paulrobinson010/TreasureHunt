@@ -4,7 +4,6 @@ import SwiftUI
 struct CreateHuntView: View {
     @EnvironmentObject private var store: HuntStore
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var locationManager = LocationManager()
 
     @State private var name = ""
     @State private var prize = ""
@@ -115,8 +114,7 @@ struct CreateHuntView: View {
                     Button("Done") { focusedField = nil }
                 }
             }
-            .onAppear { locationManager.start() }
-            .onDisappear { locationManager.stop() }
+            .onAppear { LocationPermission.request() }
             .sheet(item: $sharing, onDismiss: { dismiss() }) { hunt in
                 ShareHuntView(hunt: hunt)
             }

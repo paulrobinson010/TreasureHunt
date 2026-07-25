@@ -21,7 +21,7 @@ struct HuntPreviewView: View {
 
     private var preview: some View {
         VStack(spacing: 0) {
-            Map(initialPosition: .automatic) {
+            Map(initialPosition: previewCamera) {
                 UserAnnotation()
                 if let center = previewCenter {
                     MapCircle(center: center, radius: Config.previewRadius)
@@ -29,6 +29,10 @@ struct HuntPreviewView: View {
                 }
             }
             .mapStyle(mapFlavor.style)
+            .mapControls {
+                MapUserLocationButton()
+                MapCompass()
+            }
             .overlay(alignment: .topTrailing) {
                 MapStyleButton(flavor: $mapFlavor)
                     .padding(8)
@@ -60,6 +64,19 @@ struct HuntPreviewView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { locationManager.start() }
         .onDisappear { locationManager.stop() }
+    }
+
+    /// A settled region around the rough area — .automatic keeps re-framing
+    /// content and makes gestures clunky.
+    private var previewCamera: MapCameraPosition {
+        guard let center = previewCenter else {
+            return .userLocation(fallback: .automatic)
+        }
+        return .region(MKCoordinateRegion(
+            center: center,
+            latitudinalMeters: Config.previewRadius * 6,
+            longitudinalMeters: Config.previewRadius * 6
+        ))
     }
 
     /// Blurred centre near whichever point is closest to the hunter right now.

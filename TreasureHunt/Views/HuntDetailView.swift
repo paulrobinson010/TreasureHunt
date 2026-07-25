@@ -33,7 +33,8 @@ struct CreatedHuntView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Map(initialPosition: .automatic) {
+            Map(initialPosition: .region(hunt.pointsRegion)) {
+                UserAnnotation()
                 ForEach(Array(hunt.points.enumerated()), id: \.element.id) { index, point in
                     Marker(
                         hunt.isFound(point) ? "Found!" : "Point \(index + 1)",
@@ -44,6 +45,10 @@ struct CreatedHuntView: View {
                 }
             }
             .mapStyle(mapFlavor.style)
+            .mapControls {
+                MapUserLocationButton()
+                MapCompass()
+            }
             .overlay(alignment: .topTrailing) {
                 MapStyleButton(flavor: $mapFlavor)
                     .padding(8)
@@ -93,5 +98,32 @@ struct CreatedHuntView: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+}
+
+private extension Hunt {
+    /// A settled region comfortably containing every point — .automatic keeps
+    /// re-framing content and fights the user's gestures.
+    var pointsRegion: MKCoordinateRegion {
+        let coords = points.map(\.coordinate)
+        guard let first = coords.first else {
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
+                latitudinalMeters: 1000, longitudinalMeters: 1000
+            )
+        }
+        var minLat = first.latitude, maxLat = first.latitude
+        var minLon = first.longitude, maxLon = first.longitude
+        for c in coords {
+            minLat = min(minLat, c.latitude); maxLat = max(maxLat, c.latitude)
+            minLon = min(minLon, c.longitude); maxLon = max(maxLon, c.longitude)
+        }
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLon + maxLon) / 2),
+            span: MKCoordinateSpan(
+                latitudeDelta: max((maxLat - minLat) * 1.5, 0.005),
+                longitudeDelta: max((maxLon - minLon) * 1.5, 0.005)
+            )
+        )
     }
 }

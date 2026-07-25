@@ -57,9 +57,11 @@ struct CompassView: View {
             }
         }
         .onAppear {
+            locationManager.startHeading()
             if onTarget { FeedbackManager.shared.startBuzzing() }
         }
         .onDisappear {
+            locationManager.stopHeading()
             FeedbackManager.shared.stopBuzzing()
         }
     }
