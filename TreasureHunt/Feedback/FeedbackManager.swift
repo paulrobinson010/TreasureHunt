@@ -1,5 +1,6 @@
 import AVFoundation
 import AudioToolbox
+import CoreLocation
 import UIKit
 
 /// Pings, buzzing, and fanfares. The buzz runs as a repeating heavy haptic
@@ -10,6 +11,8 @@ final class FeedbackManager {
     static let shared = FeedbackManager()
 
     private var buzzTimer: Timer?
+    private var beepTimer: Timer?
+    private var beepInterval: TimeInterval = 0
     private let impact = UIImpactFeedbackGenerator(style: .heavy)
     private let notify = UINotificationFeedbackGenerator()
     private var players: [String: AVAudioPlayer] = [:]
@@ -17,7 +20,7 @@ final class FeedbackManager {
     private init() {
         // Ambient: mixes with the family's music and respects the mute switch.
         try? AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
-        for name in ["point-found", "hunt-solved"] {
+        for name in ["point-found", "hunt-solved", "detector-beep"] {
             if let url = Bundle.main.url(forResource: name, withExtension: "wav"),
                let player = try? AVAudioPlayer(contentsOf: url) {
                 player.prepareToPlay()
@@ -49,14 +52,35 @@ final class FeedbackManager {
         }
     }
 
+    /// Metal-detector beeping: beeps while inside a point's zone, faster the
+    /// closer you get. Audio carries distance; the buzz haptic carries
+    /// direction — separate senses so they never drown each other out.
+    func updateDetector(distance: CLLocationDistance) {
+        let clamped = min(max(distance, Config.foundRadius), Config.zoneRadius)
+        let closeness = (clamped - Config.foundRadius) / (Config.zoneRadius - Config.foundRadius)
+        let interval = 0.15 + closeness * 1.05  // 1.2 s at the zone edge → 0.15 s on top of it
+        let starting = beepTimer == nil
+        guard starting || abs(interval - beepInterval) > 0.05 else { return }
+        beepInterval = interval
+        beepTimer?.invalidate()
+        beepTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+            self?.play("detector-beep")
+        }
+        if starting { play("detector-beep") }
+    }
+
+    func stopDetector() {
+        beepTimer?.invalidate()
+        beepTimer = nil
+        beepInterval = 0
+    }
+
+    /// Direction feedback: haptic-only so it layers cleanly over the detector.
     func startBuzzing() {
         guard buzzTimer == nil else { return }
         impact.prepare()
-        var tick = 0
         buzzTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
             self?.impact.impactOccurred()
-            tick += 1
-            if tick % 4 == 0 { self?.ping() }
         }
         buzzTimer?.fire()
     }

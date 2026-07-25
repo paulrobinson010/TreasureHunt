@@ -80,6 +80,7 @@ struct PlayHuntView: View {
         .onDisappear {
             locationManager.stop()
             FeedbackManager.shared.stopBuzzing()
+            FeedbackManager.shared.stopDetector()
         }
         .onChange(of: locationManager.location) { _, newLocation in
             update(with: newLocation)
@@ -148,13 +149,16 @@ struct PlayHuntView: View {
         if distance <= Config.foundRadius {
             found(nearest, in: hunt)
         } else if distance <= Config.zoneRadius {
+            FeedbackManager.shared.updateDetector(distance: distance)
             if activePoint?.id != nearest.id {
                 activePoint = nearest
-                FeedbackManager.shared.ping()
             }
-        } else if activePoint != nil {
-            activePoint = nil
-            FeedbackManager.shared.stopBuzzing()
+        } else {
+            FeedbackManager.shared.stopDetector()
+            if activePoint != nil {
+                activePoint = nil
+                FeedbackManager.shared.stopBuzzing()
+            }
         }
     }
 
@@ -171,6 +175,7 @@ struct PlayHuntView: View {
 
     private func found(_ point: TreasurePoint, in hunt: Hunt) {
         FeedbackManager.shared.stopBuzzing()
+        FeedbackManager.shared.stopDetector()
         activePoint = nil
         store.markFound(point, in: hunt)
         if store.hunt(id: huntID)?.isSolved == true {
