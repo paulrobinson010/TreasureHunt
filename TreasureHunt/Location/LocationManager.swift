@@ -52,7 +52,16 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
     // MARK: CLLocationManagerDelegate
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        location = locations.last
+        guard let new = locations.last else { return }
+        // Throttle: GPS jitter delivers an update every second even standing
+        // still, and each publish re-renders whole screens — which can cancel
+        // an in-flight map gesture. Only publish real movement.
+        if let old = location,
+           new.distance(from: old) < 2,
+           new.timestamp.timeIntervalSince(old.timestamp) < 5 {
+            return
+        }
+        location = new
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {

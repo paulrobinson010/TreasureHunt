@@ -23,30 +23,12 @@ struct PlayHuntView: View {
         Group {
             if let hunt {
                 ZStack(alignment: .bottom) {
-                    Map(position: $camera) {
-                        UserAnnotation()
-                        if trail.count > 1 {
-                            // Dotted footsteps, like the trail on the island logo.
-                            MapPolyline(coordinates: trail)
-                                .stroke(Color.brandRed, style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [1, 10]))
-                        }
-                        ForEach(hunt.points) { point in
-                            if hunt.isFound(point) {
-                                Annotation("Found!", coordinate: point.coordinate) {
-                                    LogoMarker(badge: .found, ring: .green)
-                                }
-                            } else {
-                                MapCircle(center: point.displayCenter, radius: Config.displayRadius)
-                                    .foregroundStyle(Color.brandCyan.opacity(0.3))
-                            }
-                        }
-                    }
+                    // Equatable child: location ticks re-render the overlays
+                    // below, but never the map itself — re-rendering a map
+                    // mid-gesture cancels the gesture.
+                    HuntMap(hunt: hunt, trail: trail, flavor: mapFlavor, camera: $camera)
+                        .equatable()
                     statusBar(for: hunt)
-                }
-                .mapStyle(mapFlavor.style)
-                .mapControls {
-                    MapUserLocationButton()
-                    MapCompass()
                 }
                 // Coarse threshold: the arrow only needs rough map rotation,
                 // and per-frame state writes would stutter gestures.
@@ -194,6 +176,48 @@ struct PlayHuntView: View {
             if activePoint != nil {
                 activePoint = nil
                 FeedbackManager.shared.stopBuzzing()
+            }
+        }
+    }
+
+    /// The map and only the map: skipped by SwiftUI unless something it
+    /// actually shows has changed.
+    private struct HuntMap: View, Equatable {
+        let hunt: Hunt
+        let trail: [CLLocationCoordinate2D]
+        let flavor: MapFlavor
+        @Binding var camera: MapCameraPosition
+
+        static func == (a: Self, b: Self) -> Bool {
+            a.hunt.id == b.hunt.id
+                && a.hunt.foundPointIDs == b.hunt.foundPointIDs
+                && a.trail.count == b.trail.count
+                && a.flavor == b.flavor
+        }
+
+        var body: some View {
+            Map(position: $camera) {
+                UserAnnotation()
+                if trail.count > 1 {
+                    // Dotted footsteps, like the trail on the island logo.
+                    MapPolyline(coordinates: trail)
+                        .stroke(Color.brandRed, style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [1, 10]))
+                }
+                ForEach(hunt.points) { point in
+                    if hunt.isFound(point) {
+                        Annotation("Found!", coordinate: point.coordinate) {
+                            LogoMarker(badge: .found, ring: .green)
+                        }
+                    } else {
+                        MapCircle(center: point.displayCenter, radius: Config.displayRadius)
+                            .foregroundStyle(Color.brandCyan.opacity(0.3))
+                    }
+                }
+            }
+            .mapStyle(flavor.style)
+            .mapControls {
+                MapUserLocationButton()
+                MapCompass()
             }
         }
     }
