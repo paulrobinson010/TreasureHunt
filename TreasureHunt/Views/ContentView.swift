@@ -32,7 +32,10 @@ struct ContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    BrandWordmark(size: 24)
+                    Image("BrandLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 40)
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
