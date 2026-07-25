@@ -53,6 +53,15 @@ struct ContentView: View {
                 ToolbarItem(placement: .principal) {
                     Color.clear.frame(width: 1, height: 1)
                 }
+                #if targetEnvironment(simulator)
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        store.loadDemoData()
+                    } label: {
+                        Label("Demo", systemImage: "wand.and.stars")
+                    }
+                }
+                #endif
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         importing = true

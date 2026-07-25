@@ -147,7 +147,7 @@ struct PlayHuntView: View {
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(Color.brandCyan)
                     .rotationEffect(.degrees(GeoMath.angleDelta(cameraHeading, bearing)))
-                Text(String(format: "~%.0f m", (distance / 10).rounded() * 10))
+                Text("~" + DistanceText.string((distance / 10).rounded() * 10))
                     .font(.fun(15, .semibold))
                     .monospacedDigit()
             }
@@ -171,8 +171,8 @@ struct PlayHuntView: View {
         if distance <= Config.displayRadius {
             return "You're in the zone — keep moving to wake the compass"
         }
-        // Rounded to 10 m so the hint never becomes a rangefinder.
-        return String(format: "Nearest treasure zone is about %.0f m away", (distance / 10).rounded() * 10)
+        // Rounded to ~10 m so the hint never becomes a rangefinder.
+        return "Nearest treasure zone is about \(DistanceText.string((distance / 10).rounded() * 10)) away"
     }
 
     private func update(with location: CLLocation?) {
