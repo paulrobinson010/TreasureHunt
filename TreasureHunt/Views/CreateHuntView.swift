@@ -12,6 +12,9 @@ struct CreateHuntView: View {
     @State private var camera: MapCameraPosition = .userLocation(fallback: .automatic)
     @State private var sharing: Hunt?
 
+    private enum Field { case name, prize }
+    @FocusState private var focusedField: Field?
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -27,6 +30,7 @@ struct CreateHuntView: View {
                         }
                     }
                     .onTapGesture { position in
+                        focusedField = nil
                         if let coordinate = proxy.convert(position, from: .local) {
                             points.append(TreasurePoint(coordinate: coordinate))
                         }
@@ -46,7 +50,9 @@ struct CreateHuntView: View {
                 Form {
                     Section("Details") {
                         TextField("Hunt name", text: $name)
+                            .focused($focusedField, equals: .name)
                         TextField("Prize (revealed when solved)", text: $prize, axis: .vertical)
+                            .focused($focusedField, equals: .prize)
                     }
                     .listRowBackground(Color.brandCard)
                     Section {
@@ -59,6 +65,7 @@ struct CreateHuntView: View {
                 }
                 .scrollContentBackground(.hidden)
                 .background(OceanBackground())
+                .scrollDismissesKeyboard(.interactively)
                 .frame(height: 240)
             }
             .navigationTitle("New Hunt")
@@ -70,6 +77,10 @@ struct CreateHuntView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { save() }
                         .disabled(points.isEmpty || name.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") { focusedField = nil }
                 }
             }
             .onAppear { locationManager.start() }
