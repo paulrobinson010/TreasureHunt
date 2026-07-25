@@ -14,6 +14,15 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Image("BrandLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 170)
+                        .frame(maxWidth: .infinity)
+                }
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
                 if store.hunts.isEmpty {
                     ContentUnavailableView {
                         Label("No treasure hunts yet", systemImage: "map")
@@ -31,11 +40,9 @@ struct ContentView: View {
             .navigationTitle("X-Marks")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                // Title stays empty — the big logo header below carries the brand.
                 ToolbarItem(placement: .principal) {
-                    Image("BrandLogo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 40)
+                    Color.clear.frame(width: 1, height: 1)
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
