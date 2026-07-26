@@ -102,6 +102,21 @@ enum HuntShareCodec {
                   let report = progressReport(fromCode: code) else { return nil }
             return .progress(report)
         }
+        // Custom-scheme mirrors of the web links, used by the website's
+        // "Open in X-Marks" buttons: treasurehunt://hunt/?d=… and
+        // treasurehunt://progress/?p=…
+        if url.scheme == scheme {
+            let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            func query(_ name: String) -> String? {
+                components?.queryItems?.first { $0.name == name }?.value
+            }
+            if url.host?.lowercased() == "progress", let code = query("p") {
+                return progressReport(fromCode: code).map { .progress($0) }
+            }
+            if let code = query("d") {
+                return hunt(fromCode: code).map { .hunt($0) }
+            }
+        }
         return hunt(fromURL: url).map { .hunt($0) }
     }
 
