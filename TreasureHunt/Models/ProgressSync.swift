@@ -98,6 +98,33 @@ enum ProgressSync {
         }
     }
 
+    /// Debug-panel diagnosis: says exactly what the maker's phone can see.
+    static func debugStatus(hunt: Hunt, completion: @escaping @MainActor (String) -> Void) {
+        func finish(_ message: String) {
+            DispatchQueue.main.async { completion(message) }
+        }
+        guard let token = hunt.syncToken, let keyData = hunt.syncKeyData else {
+            finish("No sync token — this hunt predates automatic updates. Make a fresh hunt and share a fresh link.")
+            return
+        }
+        let key = SymmetricKey(data: keyData)
+        database.fetch(withRecordID: recordID(for: token)) { record, error in
+            if let ck = error as? CKError, ck.code == .unknownItem {
+                finish("No progress record exists for this hunt in THIS build's environment. Either no hunter has pushed yet, or the hunter's phone is on the other kind of build — Xcode installs use the Development database, TestFlight uses Production, and they can't see each other. Both phones must be on the same kind of build.")
+            } else if let error {
+                finish("Fetch failed: \(error.localizedDescription)")
+            } else if let record, let board = decodeBoard(record, key: key) {
+                let total = board.values.reduce(into: Set<UUID>()) { $0.formUnion($1.foundPointIDs) }.count
+                let latest = board.values.map(\.updatedAt).max()
+                finish("Record found ✓ \(board.count) hunter(s), \(total) point(s) found, last push \(latest?.formatted(date: .abbreviated, time: .shortened) ?? "?").")
+            } else if record != nil {
+                finish("Record exists but can't be decrypted — the hunter is playing a copy from a different share of this hunt (key mismatch). Re-share and re-import.")
+            } else {
+                finish("No record and no error — unexpected; try again.")
+            }
+        }
+    }
+
     private static func recordID(for token: String) -> CKRecord.ID {
         CKRecord.ID(recordName: "xmarks-progress-\(token)")
     }

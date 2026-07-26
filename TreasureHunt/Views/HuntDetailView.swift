@@ -85,6 +85,12 @@ struct CreatedHuntView: View {
                             syncTestResult = outcome
                         }
                     }
+                    Button("Check for hunter updates now") {
+                        syncTestResult = "Checking…"
+                        ProgressSync.debugStatus(hunt: hunt) { outcome in
+                            syncTestResult = outcome
+                        }
+                    }
                     if let syncTestResult {
                         Text(syncTestResult)
                             .font(.fun(12))
