@@ -85,7 +85,7 @@ enum ImportResult {
         case .duplicate(let name): "You already have \"\(name)\"."
         case .progress(let name, let found, let total):
             found == total
-                ? "\"\(name)\" is SOLVED — all \(total) treasures found! 🎉"
+                ? "\"\(name)\" is COMPLETE — all \(total) treasures found! 🎉"
                 : "\"\(name)\": \(found) of \(total) treasures found so far!"
         case .progressUnknown(let name):
             "That progress update is for \"\(name)\", which isn't on this phone."

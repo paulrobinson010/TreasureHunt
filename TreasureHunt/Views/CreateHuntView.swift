@@ -82,7 +82,7 @@ struct CreateHuntView: View {
                     Section("Details") {
                         TextField("Hunt name", text: $name)
                             .focused($focusedField, equals: .name)
-                        TextField("Prize (revealed when solved)", text: $prize, axis: .vertical)
+                        TextField("Prize (revealed when the hunt is complete)", text: $prize, axis: .vertical)
                             .focused($focusedField, equals: .prize)
                     }
                     .listRowBackground(Color.brandCard)

@@ -126,7 +126,7 @@ struct CreatedHuntView: View {
                 .foregroundStyle(.secondary)
         } else {
             Text(hunt.isSolved
-                 ? "Solved — all \(hunt.points.count) treasures found! 🎉"
+                 ? "Complete — all \(hunt.points.count) treasures found! 🎉"
                  : "\(hunt.foundPointIDs.count) of \(hunt.points.count) treasures found")
             if let updated = hunt.progressUpdatedAt {
                 Text("Last update \(updated.formatted(date: .abbreviated, time: .shortened))")

@@ -41,7 +41,7 @@ struct ContentView: View {
                     .listRowSeparator(.hidden)
                 }
                 huntSection("Hunts to solve", emoji: "🧭", color: .brandCyan, hunts: toSolve)
-                huntSection("Solved", emoji: "🏆", color: .brandSand, hunts: solved)
+                huntSection("Complete", emoji: "🏆", color: .brandSand, hunts: solved)
                 huntSection("Made by me", emoji: "🗺️", color: .brandLime, hunts: mine)
             }
             .scrollContentBackground(.hidden)
@@ -207,7 +207,7 @@ struct HuntRow: View {
         case .created:
             return "\(total) point\(total == 1 ? "" : "s") · prize: \(hunt.prize.isEmpty ? "none" : hunt.prize)"
         case .received:
-            if hunt.isSolved { return "Solved! All \(total) found" }
+            if hunt.isSolved { return "Complete! All \(total) found" }
             return "\(hunt.foundPointIDs.count) of \(total) points found"
         }
     }

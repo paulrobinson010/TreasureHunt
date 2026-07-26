@@ -9,7 +9,7 @@ struct PrizeRevealView: View {
                 .font(.system(size: 84))
                 .foregroundStyle(Color.brandSand)
                 .shadow(radius: 8)
-            Text("Treasure hunt solved!")
+            Text("Treasure hunt complete!")
                 .font(.fun(30, .bold))
             Text(hunt.name)
                 .font(.fun(20))
@@ -27,7 +27,7 @@ struct PrizeRevealView: View {
             .padding(.horizontal)
 
             if hunt.role == .received, let url = try? HuntShareCodec.progressURL(for: hunt) {
-                ShareLink(item: "🏆 I solved \"\(hunt.name)\" — all \(hunt.points.count) treasures found! Tap to update your map: \(url.absoluteString)") {
+                ShareLink(item: "🏆 I completed \"\(hunt.name)\" — all \(hunt.points.count) treasures found! Tap to update your map: \(url.absoluteString)") {
                     Label("Tell the hunt maker!", systemImage: "party.popper.fill")
                 }
                 .buttonStyle(.borderedProminent)
