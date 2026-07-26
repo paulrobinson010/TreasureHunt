@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var store: HuntStore
+    @Environment(\.scenePhase) private var scenePhase
     @State private var creating = false
     @State private var importing = false
     @State private var importText = ""
@@ -97,6 +98,22 @@ struct ContentView: View {
             }
             .alert("That didn't look like a treasure hunt link.", isPresented: $importFailed) {
                 Button("OK") {}
+            }
+            .task { refreshCreatedHunts() }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { refreshCreatedHunts() }
+            }
+        }
+    }
+
+    /// Pull hunters' automatic updates for every hunt made on this phone, so
+    /// progress dots light up from the home screen — not only inside a hunt.
+    private func refreshCreatedHunts() {
+        for hunt in store.hunts where hunt.role == .created && hunt.syncToken != nil {
+            ProgressSync.fetch(hunt: hunt) { found in
+                if let found {
+                    store.applyRemoteProgress(huntID: hunt.id, foundPointIDs: found)
+                }
             }
         }
     }
