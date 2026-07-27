@@ -9,11 +9,18 @@ struct CreateHuntView: View {
     @State private var name = ""
     @State private var prize = ""
     @State private var points: [TreasurePoint] = []
+    @State private var sequential = false
     @State private var sharing: Hunt?
 
     private enum Field { case name, prize }
     @FocusState private var focusedField: Field?
-    @State private var mapCenter: CLLocationCoordinate2D?
+    /// The map centre lives in a plain box, NOT @State: publishing it after a
+    /// gesture re-renders the view at the exact moment the next drag starts
+    /// and swallows it. It's only ever read when the drop button is tapped.
+    private final class CenterBox {
+        var coordinate: CLLocationCoordinate2D?
+    }
+    @State private var centerBox = CenterBox()
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
 
     var body: some View {
@@ -32,10 +39,9 @@ struct CreateHuntView: View {
                     MapUserLocationButton()
                     MapCompass()
                 }
-                // .onEnd, not .continuous: per-frame state updates re-render the
-                // view mid-gesture and break one-finger pan and rotate.
-                .onMapCameraChange(frequency: .onEnd) { context in
-                    mapCenter = context.camera.centerCoordinate
+                // Continuous is free now — writing the box never re-renders.
+                .onMapCameraChange(frequency: .continuous) { context in
+                    centerBox.coordinate = context.camera.centerCoordinate
                 }
                 .overlay(alignment: .topTrailing) {
                     MapStyleButton(flavor: $mapFlavor)
@@ -64,7 +70,6 @@ struct CreateHuntView: View {
                             .background(Color.brandRed, in: Capsule())
                             .shadow(radius: 4)
                     }
-                    .disabled(mapCenter == nil)
                     .padding(.bottom, 12)
                 }
                 .overlay(alignment: .top) {
@@ -84,6 +89,7 @@ struct CreateHuntView: View {
                             .focused($focusedField, equals: .name)
                         TextField("Prize (revealed when the hunt is complete)", text: $prize, axis: .vertical)
                             .focused($focusedField, equals: .prize)
+                        Toggle("Find points in order (1, 2, 3…)", isOn: $sequential)
                     }
                     .listRowBackground(Color.brandCard)
                     Section {
@@ -122,8 +128,8 @@ struct CreateHuntView: View {
     }
 
     private func addPointAtX() {
-        guard let mapCenter else { return }
-        points.append(TreasurePoint(coordinate: mapCenter))
+        guard let center = centerBox.coordinate else { return }
+        points.append(TreasurePoint(coordinate: center))
     }
 
     private func save() {
@@ -136,7 +142,8 @@ struct CreateHuntView: View {
             role: .created,
             createdAt: .now,
             syncToken: ProgressSync.makeToken(),
-            syncKeyData: syncKey
+            syncKeyData: syncKey,
+            sequential: sequential
         )
         store.add(hunt)
         sharing = hunt

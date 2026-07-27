@@ -57,6 +57,8 @@ struct Hunt: Identifiable, Codable {
     /// shared before this feature — those use the manual progress links.
     var syncToken: String? = nil
     var syncKeyData: Data? = nil
+    /// Points must be found in order (1, 2, 3…) instead of any order.
+    var sequential: Bool = false
 
     var isSolved: Bool {
         !points.isEmpty && foundPointIDs.count == points.count
@@ -74,5 +76,11 @@ struct Hunt: Identifiable, Codable {
         unfoundPoints.min {
             GeoMath.distance(from: coordinate, to: $0.coordinate) < GeoMath.distance(from: coordinate, to: $1.coordinate)
         }
+    }
+
+    /// The point the hunter should be working on right now: the next in order
+    /// for sequential hunts, otherwise whichever unfound point is nearest.
+    func targetPoint(from coordinate: CLLocationCoordinate2D) -> TreasurePoint? {
+        sequential ? unfoundPoints.first : nearestUnfoundPoint(to: coordinate)
     }
 }

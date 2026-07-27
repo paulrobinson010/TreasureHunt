@@ -134,7 +134,7 @@ struct PlayHuntView: View {
     private func guidePointer(for hunt: Hunt) -> some View {
         if !hunt.isSolved, activePoint == nil,
            let location = locationManager.location,
-           let nearest = hunt.nearestUnfoundPoint(to: location.coordinate) {
+           let nearest = hunt.targetPoint(from: location.coordinate) {
             let bearing = GeoMath.bearing(from: location.coordinate, to: nearest.displayCenter)
             let distance = GeoMath.distance(from: location.coordinate, to: nearest.displayCenter)
             HStack(spacing: 8) {
@@ -159,7 +159,7 @@ struct PlayHuntView: View {
 
     private func hint(for hunt: Hunt) -> String? {
         guard let location = locationManager.location,
-              let nearest = hunt.nearestUnfoundPoint(to: location.coordinate) else {
+              let nearest = hunt.targetPoint(from: location.coordinate) else {
             return "Waiting for GPS…"
         }
         let distance = GeoMath.distance(from: location.coordinate, to: nearest.displayCenter)
@@ -167,14 +167,15 @@ struct PlayHuntView: View {
             return "You're in the zone — keep moving to wake the compass"
         }
         // Rounded to ~10 m so the hint never becomes a rangefinder.
-        return "Nearest treasure zone is about \(DistanceText.string((distance / 10).rounded() * 10)) away"
+        let label = hunt.sequential ? "The next treasure zone" : "Nearest treasure zone"
+        return "\(label) is about \(DistanceText.string((distance / 10).rounded() * 10)) away"
     }
 
     private func update(with location: CLLocation?) {
         guard let location else { return }
         recordTrail(location)
         guard let hunt, !hunt.isSolved,
-              let nearest = hunt.nearestUnfoundPoint(to: location.coordinate) else { return }
+              let nearest = hunt.targetPoint(from: location.coordinate) else { return }
         let distance = GeoMath.distance(from: location.coordinate, to: nearest.coordinate)
 
         if distance <= Config.foundRadius {
@@ -227,7 +228,8 @@ struct PlayHuntView: View {
                         Annotation("Found!", coordinate: point.coordinate) {
                             LogoMarker(badge: .found, ring: .green)
                         }
-                    } else {
+                    } else if !hunt.sequential || point.id == hunt.unfoundPoints.first?.id {
+                        // Sequential hunts reveal one zone at a time.
                         MapCircle(center: point.displayCenter, radius: Config.displayRadius)
                             .foregroundStyle(Color.brandCyan.opacity(0.3))
                     }
