@@ -74,6 +74,9 @@
     box-shadow: 0 10px 28px rgba(0,0,0,.45);
     scroll-snap-align: center;
   }
+  /* Centre the row when it fits, without breaking scroll when it doesn't */
+  .shots-row img:first-child { margin-left: auto; }
+  .shots-row img:last-child { margin-right: auto; }
   @media (prefers-reduced-motion: no-preference) {
     .shots-row img { transition: transform .2s ease; }
     .shots-row img:hover { transform: translateY(-6px) rotate(-1deg); }
