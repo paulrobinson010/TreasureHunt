@@ -165,6 +165,11 @@ struct ContentView: View {
                 // Phone handed back to a child shouldn't still be unlocked.
                 if phase == .background { gate.lock() }
             }
+            .onChange(of: deviceRoleRaw) { _, _ in
+                // Becoming a hunter's phone drops anything waiting to be
+                // accepted, so nothing survives the change of role.
+                if DeviceSetup.role != .grownUp { invite = nil }
+            }
         }
     }
 
@@ -237,14 +242,14 @@ struct ContentView: View {
             } else if let sender, crew.contains(publicKey: sender.publicKey) {
                 store.importHunt(hunt)
                 importResult = .imported(hunt.name, from: "\(sender.name) ✓")
-            } else if DeviceSetup.isHunterPhone {
-                // No accept button on a hunter's phone, whoever is standing
-                // over it. Trusting a person is a decision a grown-up makes
-                // deliberately, on their own phone — not one taken under the
-                // excitement of a hunt that has just arrived.
-                importResult = .senderNotAllowed(sender?.name)
-            } else {
+            } else if DeviceSetup.role == .grownUp {
                 invite = HuntInvite(hunt: hunt, sender: sender)
+            } else {
+                // Everything else refuses, with no accept button: a hunter's
+                // phone, and also a phone that hasn't been set up yet — a link
+                // tapped during a fresh install must not queue an invite that
+                // surfaces after the phone becomes a hunter's.
+                importResult = .senderNotAllowed(sender?.name)
             }
         case .crewInvite(let card):
             gate.guarding {

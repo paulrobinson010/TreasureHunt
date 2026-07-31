@@ -205,6 +205,30 @@ remain open.
    hunts, and must never prompt to trust someone new.
 6. **Independent review.** This document is written by the people who wrote
    the app. Before any wide release, someone else should try to break it.
+7. **None of these controls has been exercised on a device yet.** Every
+   control described here is unverified code. An untested safety control is
+   worse than an absent one, because it invites confidence it has not earned.
+   §11 is the minimum before anyone else's child uses this.
+
+---
+
+## 11. Verification checklist
+
+Nothing in this document should be believed until these pass on real phones,
+one set up as a grown-up's and one as a hunter's.
+
+| # | Test | Expected |
+|---|---|---|
+| V1 | Send a hunt from the grown-up phone to the hunter phone before they are crewmates | Refused: "…isn't in your crew". No accept button anywhere. |
+| V2 | Add the grown-up to the hunter phone's crew (needs the passcode), then resend | Opens, marked with a tick. |
+| V3 | On the hunter phone, look for any way to make a hunt | No + button, no create screen reachable. |
+| V4 | On the hunter phone, tap the crew button | Asks for the passcode, not a sum. |
+| V5 | Enter the wrong passcode four times | Locks out with a countdown; the delay grows. |
+| V6 | Fresh-install the app on a spare phone and tap a hunt link *before* completing setup, then set it up as a hunter's phone | Hunt refused; no invite appears afterwards. |
+| V7 | Edit a shared link's payload by one character and open it | Refused (signature/decrypt fails). |
+| V8 | On the grown-up phone, add a crewmate called "Dad", then send a hunt from a *third* phone also calling itself "Dad" | Red STOP panel naming the collision. |
+| V9 | Open an old pre-signing hunt link on the hunter phone | Refused — no sender to verify. |
+| V10 | Complete a hunt and check the maker's phone | No progress, no ticks, no "last update". |
 
 ---
 
