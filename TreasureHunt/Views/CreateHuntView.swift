@@ -10,6 +10,8 @@ struct CreateHuntView: View {
     @State private var prize = ""
     @State private var points: [TreasurePoint] = []
     @State private var sequential = false
+    @State private var scheduled = false
+    @State private var startsAt = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
     @State private var sharing: Hunt?
 
     private enum Field { case name, prize }
@@ -90,6 +92,11 @@ struct CreateHuntView: View {
                         TextField("Prize (revealed when the hunt is complete)", text: $prize, axis: .vertical)
                             .focused($focusedField, equals: .prize)
                         Toggle("Find points in order (1, 2, 3…)", isOn: $sequential)
+                        Toggle("Starts at a set time", isOn: $scheduled)
+                        if scheduled {
+                            DatePicker("Hunt begins", selection: $startsAt, in: Date.now...)
+                                .font(.fun(15))
+                        }
                     }
                     .listRowBackground(Color.brandCard)
                     Section {
@@ -143,7 +150,8 @@ struct CreateHuntView: View {
             createdAt: .now,
             syncToken: ProgressSync.makeToken(),
             syncKeyData: syncKey,
-            sequential: sequential
+            sequential: sequential,
+            startsAt: scheduled ? startsAt : nil
         )
         store.add(hunt)
         sharing = hunt

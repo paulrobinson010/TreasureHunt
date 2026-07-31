@@ -45,21 +45,43 @@ struct HuntPreviewView: View {
                 Label("The prize is revealed when you find every point", systemImage: "gift")
                     .font(.fun(13))
                     .foregroundStyle(.secondary)
-                Button {
-                    started = true
-                } label: {
-                    Text(hunt.foundPointIDs.isEmpty
-                         ? "Start the hunt!"
-                         : "Keep hunting (\(hunt.foundPointIDs.count)/\(hunt.points.count) found)")
-                        .font(.fun(18, .bold))
-                        .foregroundStyle(Color.brandNight)
+                // A scheduled hunt can be held and looked at, but not started
+                // until its moment arrives — so the wait is part of the fun.
+                TimelineView(.periodic(from: .now, by: 1)) { _ in
+                    if let startsAt = hunt.startsAt, startsAt > .now {
+                        VStack(spacing: 6) {
+                            Text("Starts \(startsAt.formatted(date: .abbreviated, time: .shortened))")
+                                .font(.fun(15, .semibold))
+                                .foregroundStyle(Color.brandSand)
+                            Text(countdown(to: startsAt))
+                                .font(.fun(30, .bold))
+                                .monospacedDigit()
+                                .foregroundStyle(Color.brandCyan)
+                            Text("Get your boots on! 🥾")
+                                .font(.fun(13))
+                                .foregroundStyle(.secondary)
+                        }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(
-                            LinearGradient(colors: [.brandCyan, .brandLime],
-                                           startPoint: .leading, endPoint: .trailing),
-                            in: Capsule()
-                        )
+                        .padding(.vertical, 10)
+                        .background(Color.brandCard, in: RoundedRectangle(cornerRadius: 18))
+                    } else {
+                        Button {
+                            started = true
+                        } label: {
+                            Text(hunt.foundPointIDs.isEmpty
+                                 ? "Start the hunt!"
+                                 : "Keep hunting (\(hunt.foundPointIDs.count)/\(hunt.points.count) found)")
+                                .font(.fun(18, .bold))
+                                .foregroundStyle(Color.brandNight)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(
+                                    LinearGradient(colors: [.brandCyan, .brandLime],
+                                                   startPoint: .leading, endPoint: .trailing),
+                                    in: Capsule()
+                                )
+                        }
+                    }
                 }
             }
             .padding()
@@ -70,6 +92,17 @@ struct HuntPreviewView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { locationManager.start() }
         .onDisappear { locationManager.stop() }
+    }
+
+    /// "2 days 4 hrs" far out, "04:31" when it's nearly time.
+    private func countdown(to date: Date) -> String {
+        let seconds = max(0, Int(date.timeIntervalSinceNow))
+        let days = seconds / 86400
+        let hours = (seconds % 86400) / 3600
+        let minutes = (seconds % 3600) / 60
+        if days > 0 { return "\(days) day\(days == 1 ? "" : "s") \(hours) hr\(hours == 1 ? "" : "s")" }
+        if hours > 0 { return String(format: "%d:%02d:%02d", hours, minutes, seconds % 60) }
+        return String(format: "%02d:%02d", minutes, seconds % 60)
     }
 
     /// A settled region around the rough area — .automatic keeps re-framing

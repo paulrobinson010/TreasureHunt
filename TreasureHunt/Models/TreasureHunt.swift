@@ -59,6 +59,14 @@ struct Hunt: Identifiable, Codable {
     var syncKeyData: Data? = nil
     /// Points must be found in order (1, 2, 3…) instead of any order.
     var sequential: Bool = false
+    /// Optional embargo: the hunt can be held, previewed and counted down to,
+    /// but not started until this moment arrives.
+    var startsAt: Date? = nil
+
+    var isLocked: Bool {
+        guard let startsAt else { return false }
+        return startsAt > .now
+    }
 
     var isSolved: Bool {
         !points.isEmpty && foundPointIDs.count == points.count

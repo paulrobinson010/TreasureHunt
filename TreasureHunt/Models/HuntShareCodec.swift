@@ -24,6 +24,7 @@ enum HuntShareCodec {
         var syncToken: String?
         var syncKey: Data?
         var sequential: Bool?
+        var startsAt: Date?
     }
 
     /// A hunter's progress, sent back to the hunt maker (or a sibling's copy).
@@ -46,7 +47,7 @@ enum HuntShareCodec {
         let raw = try JSONEncoder().encode(
             Payload(id: hunt.id, name: hunt.name, prize: hunt.prize, points: hunt.points,
                     syncToken: hunt.syncToken, syncKey: hunt.syncKeyData,
-                    sequential: hunt.sequential)
+                    sequential: hunt.sequential, startsAt: hunt.startsAt)
         )
         let compressed = try (raw as NSData).compressed(using: .zlib) as Data
         return try HuntCrypto.encrypt(compressed)
@@ -188,7 +189,8 @@ enum HuntShareCodec {
             createdAt: .now,
             syncToken: payload.syncToken,
             syncKeyData: payload.syncKey,
-            sequential: payload.sequential ?? false
+            sequential: payload.sequential ?? false,
+            startsAt: payload.startsAt
         )
     }
 }

@@ -225,6 +225,9 @@ struct HuntRow: View {
             return "\(total) point\(total == 1 ? "" : "s") · prize: \(hunt.prize.isEmpty ? "none" : hunt.prize)"
         case .received:
             if hunt.isSolved { return "Complete! All \(total) found" }
+            if let startsAt = hunt.startsAt, startsAt > .now {
+                return "Starts \(startsAt.formatted(date: .abbreviated, time: .shortened))"
+            }
             return "\(hunt.foundPointIDs.count) of \(total) points found"
         }
     }
