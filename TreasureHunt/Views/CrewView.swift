@@ -18,21 +18,21 @@ struct CrewView: View {
             }
             .listRowBackground(Color.brandCard)
 
-            Section("Join up with someone") {
+            Section("Add someone early") {
                 if let inviteURL {
                     ShareLink(item: inviteMessage(inviteURL)) {
                         Label("Send my hunting card", systemImage: "person.badge.plus")
                     }
                 }
-                Text("Send your card, and ask them to send theirs back. Once you've both tapped each other's card, you're crewmates — hunts between you arrive marked as trusted.")
+                Text("Optional — sending a hunt does this by itself. Your first hunt asks a grown-up on their phone to accept, and that adds you to their crew.")
                     .font(.fun(12))
                     .foregroundStyle(.secondary)
             }
             .listRowBackground(Color.brandCard)
 
-            Section("My crew") {
+            Section("Who can send me hunts") {
                 if crew.members.isEmpty {
-                    Text("Nobody yet. Anyone can still send you a hunt by link — crewmates just arrive with a tick so you know who they're from.")
+                    Text("Nobody yet. Hunts from anyone else need a grown-up to accept them first.")
                         .font(.fun(12))
                         .foregroundStyle(.secondary)
                 } else {

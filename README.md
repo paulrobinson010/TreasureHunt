@@ -169,14 +169,18 @@ key whose private half lives in the Keychain (`HunterIdentity.swift`). Shared
 hunts are signed with it, so the recipient can tell a hunt from a known sender
 apart from one that merely turned up.
 
-A handshake is two taps each way: send your card (`/crew/?k=…`, encrypted like
-everything else), they tap it, they send theirs back, you tap it. From then on
-each other's hunts arrive marked with a tick, and the **My Crew** screen answers
-"who can send me treasure hunts?" — with a swipe to remove anyone.
+**Sending is just sending.** The handshake happens by itself on the first
+hunt: a hunt from someone already in the crew drops straight into the list,
+and one from anyone else opens an invite screen naming the sender, where a
+grown-up must pass the parental gate to accept. Accepting adds that sender to
+the crew, so it only ever happens once per person.
 
-Links from outside the crew still import (you tapped them deliberately); they
-simply arrive unmarked. The crew list is the trust foundation for nearby
-broadcast, where unsolicited hunts *will* be restricted to crewmates.
+The **My Crew** screen answers "who can send me treasure hunts?" — with a
+swipe to remove anyone, a place to set your hunting name, and an optional
+card link (`/crew/?k=…`) for pairing ahead of time.
+
+Nothing bypasses this: an unsigned or unknown-sender hunt always needs the
+grown-up check, which is also what nearby broadcast will filter on.
 
 ## Scheduled hunts
 

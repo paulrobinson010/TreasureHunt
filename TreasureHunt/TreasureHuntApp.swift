@@ -4,7 +4,7 @@ import SwiftUI
 struct TreasureHuntApp: App {
     @StateObject private var store = HuntStore()
     @StateObject private var crew = CrewStore()
-    @State private var importResult: ImportResult?
+    @StateObject private var gate = ParentGate()
     @State private var showSplash = true
 
     init() {
@@ -26,6 +26,7 @@ struct TreasureHuntApp: App {
                 ContentView()
                     .environmentObject(store)
                     .environmentObject(crew)
+                    .environmentObject(gate)
                     .environment(\.font, .fun(17))
                 if showSplash {
                     SplashView()
@@ -39,43 +40,6 @@ struct TreasureHuntApp: App {
                 try? await Task.sleep(for: .seconds(1.8))
                 withAnimation(.easeOut(duration: 0.45)) { showSplash = false }
             }
-            .onOpenURL { handle(url: $0) }
-            .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
-                if let url = activity.webpageURL { handle(url: url) }
-            }
-            .alert(
-                "X-Marks",
-                isPresented: Binding(
-                    get: { importResult != nil },
-                    set: { if !$0 { importResult = nil } }
-                ),
-                presenting: importResult
-            ) { _ in
-                Button("OK") {}
-            } message: { result in
-                Text(result.message)
-            }
-        }
-    }
-
-    private func handle(url: URL) {
-        switch HuntShareCodec.decode(url: url) {
-        case .hunt(let hunt, let sender):
-            let from = sender.map { crew.contains(publicKey: $0.publicKey) ? "\($0.name) ✓" : $0.name }
-            importResult = store.importHunt(hunt)
-                ? .imported(hunt.name, from: from)
-                : .duplicate(hunt.name)
-        case .crewInvite(let card):
-            let isNew = crew.add(card)
-            importResult = .crewJoined(card.name, isNew: isNew)
-        case .progress(let report):
-            if let updated = store.applyProgress(report) {
-                importResult = .progress(updated.name, updated.foundPointIDs.count, updated.points.count)
-            } else {
-                importResult = .progressUnknown(report.name)
-            }
-        case nil:
-            importResult = .failed
         }
     }
 }

@@ -11,39 +11,64 @@ struct ShareHuntView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    Text("Send this hunt over iMessage, WhatsApp or anything else. The hunt is encrypted and travels inside the link itself — tapping it opens straight into the X-Marks app. If a link won't tap, your hunters can copy the whole message and use Import in their app, or you can send the file instead.")
-                        .font(.fun(13))
-                        .foregroundStyle(.secondary)
-                }
-                .listRowBackground(Color.brandCard)
+            VStack(spacing: 18) {
+                Image("BrandLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 110)
+
+                Text("\"\(hunt.name)\" is ready!")
+                    .font(.fun(22, .bold))
+                    .foregroundStyle(Color.brandSand)
+                    .multilineTextAlignment(.center)
+
                 if let link {
-                    Section("Send as link (recommended)") {
-                        ShareLink(item: shareMessage(for: link)) {
-                            Label("Share link", systemImage: "link")
-                        }
+                    ShareLink(item: shareMessage(for: link)) {
+                        Label("Send this hunt", systemImage: "paperplane.fill")
+                            .font(.fun(19, .bold))
+                            .foregroundStyle(Color.brandNight)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 15)
+                            .background(
+                                LinearGradient(colors: [.brandCyan, .brandLime],
+                                               startPoint: .leading, endPoint: .trailing),
+                                in: Capsule()
+                            )
+                    }
+                }
+
+                Text("Sent as \(HunterIdentity.name). The first hunt you send someone needs a grown-up on their phone to tap Accept — after that, your hunts arrive straight away.")
+                    .font(.fun(13))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+
+                Spacer()
+
+                HStack(spacing: 22) {
+                    if let link {
                         Button {
                             UIPasteboard.general.string = link.absoluteString
                             copied = true
                         } label: {
-                            Label(copied ? "Copied!" : "Copy link", systemImage: copied ? "checkmark" : "doc.on.doc")
+                            Label(copied ? "Copied!" : "Copy link",
+                                  systemImage: copied ? "checkmark" : "doc.on.doc")
+                                .font(.fun(14))
                         }
                     }
-                    .listRowBackground(Color.brandCard)
-                }
-                if let file {
-                    Section("Send as file") {
+                    if let file {
                         ShareLink(item: file) {
-                            Label("Share \(hunt.name).treasurehunt", systemImage: "square.and.arrow.up")
+                            Label("Send as file", systemImage: "doc.fill")
+                                .font(.fun(14))
                         }
                     }
-                    .listRowBackground(Color.brandCard)
                 }
+                .foregroundStyle(Color.brandCyan)
+                .padding(.bottom, 8)
             }
-            .scrollContentBackground(.hidden)
+            .padding(24)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(OceanBackground())
-            .navigationTitle("Share \"\(hunt.name)\"")
+            .navigationTitle("Share")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -58,6 +83,6 @@ struct ShareHuntView: View {
     }
 
     private func shareMessage(for url: URL) -> String {
-        "🏴‍☠️ Treasure hunt: \"\(hunt.name)\"! Tap to open it in the X-Marks app: \(url.absoluteString)"
+        "🏴‍☠️ \(HunterIdentity.name) has sent you a treasure hunt: \"\(hunt.name)\"! Tap to open it in X-Marks: \(url.absoluteString)"
     }
 }
