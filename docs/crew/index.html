@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join a hunting crew on X-Marks</title>
+<meta property="og:title" content="Someone wants to swap treasure hunts with you!">
+<meta property="og:description" content="Add them to your crew in the X-Marks app.">
+<meta property="og:image" content="https://x-marks.robbo-online.uk/assets/og.png">
+<link rel="icon" type="image/png" href="/assets/favicon.png?v=3">
+<link rel="stylesheet" href="/assets/site.css?v=1">
+<style>
+  body { text-align: center; }
+  .wrap { max-width: 560px; padding: 48px 24px; }
+  .brand { width: min(240px, 70vw); height: auto; }
+  h1 { font-size: 1.8rem; margin: 18px 0 4px; }
+  .box {
+    text-align: left;
+    background: var(--band);
+    border-radius: 22px;
+    border-top: 5px solid var(--lime);
+    padding: 20px;
+    margin: 24px 0;
+    color: var(--muted);
+  }
+  .box strong { color: var(--text); }
+  .btn.secondary { background: var(--card); color: var(--cyan); box-shadow: 0 6px 0 #071018; }
+</style>
+</head>
+<body>
+<div class="wrap xs">
+  <i style="top:4%; left:2%;  font-size:1.8rem; transform:rotate(-14deg)">✕</i>
+  <i style="top:10%; right:3%; font-size:1.3rem; transform:rotate(18deg)">✕</i>
+  <img class="brand bob" src="/assets/brand.png?v=1" alt="X-Marks — treasure hunts, big adventures">
+  <h1>🤝 Someone wants to join your crew!</h1>
+  <p>Crewmates can swap treasure hunts in <span class="wordmark"><span class="x">X</span>-Marks</span>, and their hunts arrive with a tick so you always know who sent them.</p>
+  <p><button class="btn" id="open">🏴‍☠️ Add them in X-Marks</button></p>
+  <div class="box">
+    No app on this phone yet? Get <strong>X-Marks</strong> set up first, then tap this link again. Remember to send your own card back so they can add you too — a crew works both ways.
+  </div>
+  <button class="btn secondary" id="copy">Copy crew link</button>
+  <p class="note"><a href="/">What is X-Marks?</a> · <a href="/privacy/">Privacy</a></p>
+</div>
+<script>
+  document.getElementById('open').addEventListener('click', () => {
+    const code = new URLSearchParams(location.search).get('k');
+    location.href = code ? 'treasurehunt://crew/?k=' + code : 'treasurehunt://crew/';
+  });
+  document.getElementById('copy').addEventListener('click', async (e) => {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      e.target.textContent = 'Copied!';
+    } catch {
+      e.target.textContent = 'Press and hold the address bar to copy';
+    }
+  });
+</script>
+</body>
+</html>

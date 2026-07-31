@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct TreasureHuntApp: App {
     @StateObject private var store = HuntStore()
+    @StateObject private var crew = CrewStore()
     @State private var importResult: ImportResult?
     @State private var showSplash = true
 
@@ -24,6 +25,7 @@ struct TreasureHuntApp: App {
             ZStack {
                 ContentView()
                     .environmentObject(store)
+                    .environmentObject(crew)
                     .environment(\.font, .fun(17))
                 if showSplash {
                     SplashView()
@@ -58,8 +60,14 @@ struct TreasureHuntApp: App {
 
     private func handle(url: URL) {
         switch HuntShareCodec.decode(url: url) {
-        case .hunt(let hunt):
-            importResult = store.importHunt(hunt) ? .imported(hunt.name) : .duplicate(hunt.name)
+        case .hunt(let hunt, let sender):
+            let from = sender.map { crew.contains(publicKey: $0.publicKey) ? "\($0.name) ✓" : $0.name }
+            importResult = store.importHunt(hunt)
+                ? .imported(hunt.name, from: from)
+                : .duplicate(hunt.name)
+        case .crewInvite(let card):
+            let isNew = crew.add(card)
+            importResult = .crewJoined(card.name, isNew: isNew)
         case .progress(let report):
             if let updated = store.applyProgress(report) {
                 importResult = .progress(updated.name, updated.foundPointIDs.count, updated.points.count)
@@ -73,23 +81,34 @@ struct TreasureHuntApp: App {
 }
 
 enum ImportResult {
-    case imported(String)
+    case imported(String, from: String?)
     case duplicate(String)
+    case crewJoined(String, isNew: Bool)
     case progress(String, Int, Int)
     case progressUnknown(String)
     case failed
 
     var message: String {
         switch self {
-        case .imported(let name): "\"\(name)\" was added to your hunts. Happy hunting!"
-        case .duplicate(let name): "You already have \"\(name)\"."
+        case .imported(let name, let from):
+            if let from {
+                return "\"\(name)\" from \(from) was added to your hunts. Happy hunting!"
+            }
+            return "\"\(name)\" was added to your hunts. Happy hunting!"
+        case .crewJoined(let name, let isNew):
+            return isNew
+                ? "\(name) has joined your crew! Send your card back so they can add you too."
+                : "\(name) is already in your crew."
+        case .duplicate(let name):
+            return "You already have \"\(name)\"."
         case .progress(let name, let found, let total):
-            found == total
+            return found == total
                 ? "\"\(name)\" is COMPLETE — all \(total) treasures found! 🎉"
                 : "\"\(name)\": \(found) of \(total) treasures found so far!"
         case .progressUnknown(let name):
-            "That progress update is for \"\(name)\", which isn't on this phone."
-        case .failed: "That link didn't contain a valid treasure hunt."
+            return "That progress update is for \"\(name)\", which isn't on this phone."
+        case .failed:
+            return "That link didn't contain a valid treasure hunt."
         }
     }
 }

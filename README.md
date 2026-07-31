@@ -153,6 +153,28 @@ the reported GPS uncertainty (capped at `maxDigRadius`), because a phone
 reporting ±6 m can never measure a distance under 3 m even standing on the
 treasure.
 
+## Crew: who can send you hunts
+
+Every phone has a hunting identity — a display name plus a Curve25519 signing
+key whose private half lives in the Keychain (`HunterIdentity.swift`). Shared
+hunts are signed with it, so the recipient can tell a hunt from a known sender
+apart from one that merely turned up.
+
+A handshake is two taps each way: send your card (`/crew/?k=…`, encrypted like
+everything else), they tap it, they send theirs back, you tap it. From then on
+each other's hunts arrive marked with a tick, and the **My Crew** screen answers
+"who can send me treasure hunts?" — with a swipe to remove anyone.
+
+Links from outside the crew still import (you tapped them deliberately); they
+simply arrive unmarked. The crew list is the trust foundation for nearby
+broadcast, where unsolicited hunts *will* be restricted to crewmates.
+
+## Scheduled hunts
+
+A hunt can carry a start time (held with a live countdown until it opens) and
+an end time (after which it shows as finished) — for birthday mornings and
+events where the treasure is genuinely packed away afterwards.
+
 ## Map modes while hunting
 
 | Mode | Behaviour |

@@ -62,10 +62,17 @@ struct Hunt: Identifiable, Codable {
     /// Optional embargo: the hunt can be held, previewed and counted down to,
     /// but not started until this moment arrives.
     var startsAt: Date? = nil
+    /// Optional closing time, for hunts tied to an event.
+    var endsAt: Date? = nil
 
     var isLocked: Bool {
         guard let startsAt else { return false }
         return startsAt > .now
+    }
+
+    var hasFinished: Bool {
+        guard let endsAt else { return false }
+        return endsAt < .now
     }
 
     var isSolved: Bool {

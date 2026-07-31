@@ -12,6 +12,8 @@ struct CreateHuntView: View {
     @State private var sequential = false
     @State private var scheduled = false
     @State private var startsAt = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
+    @State private var expires = false
+    @State private var endsAt = Calendar.current.date(byAdding: .day, value: 2, to: .now) ?? .now
     @State private var sharing: Hunt?
 
     private enum Field { case name, prize }
@@ -97,6 +99,11 @@ struct CreateHuntView: View {
                             DatePicker("Hunt begins", selection: $startsAt, in: Date.now...)
                                 .font(.fun(15))
                         }
+                        Toggle("Finishes at a set time", isOn: $expires)
+                        if expires {
+                            DatePicker("Hunt closes", selection: $endsAt, in: Date.now...)
+                                .font(.fun(15))
+                        }
                     }
                     .listRowBackground(Color.brandCard)
                     Section {
@@ -151,7 +158,8 @@ struct CreateHuntView: View {
             syncToken: ProgressSync.makeToken(),
             syncKeyData: syncKey,
             sequential: sequential,
-            startsAt: scheduled ? startsAt : nil
+            startsAt: scheduled ? startsAt : nil,
+            endsAt: expires ? endsAt : nil
         )
         store.add(hunt)
         sharing = hunt

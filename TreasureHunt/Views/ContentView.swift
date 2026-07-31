@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var store: HuntStore
+    @EnvironmentObject private var crew: CrewStore
     @Environment(\.scenePhase) private var scenePhase
     @State private var creating = false
     @State private var importing = false
@@ -69,6 +70,14 @@ struct ContentView: View {
                     } label: {
                         Label("Import", systemImage: "square.and.arrow.down")
                     }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        CrewView()
+                    } label: {
+                        Image(systemName: "person.2.fill")
+                    }
+                    .accessibilityLabel("My crew")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
@@ -155,15 +164,17 @@ struct ContentView: View {
         if let range = text.range(of: "https://[^\\s]+", options: .regularExpression),
            let url = URL(string: String(text[range])) {
             decoded = HuntShareCodec.decode(url: url)
-        } else if let range = text.range(of: "treasurehunt://[A-Za-z0-9_\\-/]+", options: .regularExpression),
+        } else if let range = text.range(of: "treasurehunt://[^\\s]+", options: .regularExpression),
                   let url = URL(string: String(text[range])) {
             decoded = HuntShareCodec.decode(url: url)
-        } else if let hunt = HuntShareCodec.hunt(fromCode: text) {
-            decoded = .hunt(hunt)
+        } else if let found = HuntShareCodec.huntAndSender(fromCode: text) {
+            decoded = .hunt(found.0, sender: found.1)
         }
         switch decoded {
-        case .hunt(let hunt):
+        case .hunt(let hunt, _):
             store.importHunt(hunt)
+        case .crewInvite(let card):
+            crew.add(card)
         case .progress(let report):
             if store.applyProgress(report) == nil { importFailed = true }
         case nil:

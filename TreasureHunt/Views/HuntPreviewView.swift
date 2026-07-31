@@ -48,7 +48,20 @@ struct HuntPreviewView: View {
                 // A scheduled hunt can be held and looked at, but not started
                 // until its moment arrives — so the wait is part of the fun.
                 TimelineView(.periodic(from: .now, by: 1)) { _ in
-                    if let startsAt = hunt.startsAt, startsAt > .now {
+                    if hunt.hasFinished {
+                        VStack(spacing: 6) {
+                            Text("This hunt has finished")
+                                .font(.fun(17, .semibold))
+                                .foregroundStyle(Color.brandSand)
+                            Text("The treasure has been packed away. Ask for a new hunt!")
+                                .font(.fun(13))
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.brandCard, in: RoundedRectangle(cornerRadius: 18))
+                    } else if let startsAt = hunt.startsAt, startsAt > .now {
                         VStack(spacing: 6) {
                             Text("Starts \(startsAt.formatted(date: .abbreviated, time: .shortened))")
                                 .font(.fun(15, .semibold))
