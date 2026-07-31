@@ -1,4 +1,3 @@
-import CryptoKit
 import MapKit
 import SwiftUI
 
@@ -147,7 +146,6 @@ struct CreateHuntView: View {
     }
 
     private func save() {
-        let syncKey = SymmetricKey(size: .bits128).withUnsafeBytes { Data($0) }
         let hunt = Hunt(
             id: UUID(),
             name: name.trimmingCharacters(in: .whitespaces),
@@ -155,8 +153,6 @@ struct CreateHuntView: View {
             points: points,
             role: .created,
             createdAt: .now,
-            syncToken: ProgressSync.makeToken(),
-            syncKeyData: syncKey,
             sequential: sequential,
             startsAt: scheduled ? startsAt : nil,
             endsAt: expires ? endsAt : nil

@@ -29,7 +29,8 @@
   <h2>What the app stores, and where</h2>
   <ul>
     <li><strong>Hunts you make or receive</strong> (names, prize descriptions,
-        map points, and your progress) are stored only on your device, in the
+        map points, and which treasures you have found) are stored only on your
+        device, in the
         app's private storage, protected by iOS data protection (encrypted at
         rest until the device is first unlocked).</li>
     <li><strong>Your location and compass heading</strong> are used live, on
@@ -51,15 +52,12 @@
   (iMessage, WhatsApp, etc.). Those services handle the message under their
   own privacy policies.</p>
 
-  <h2>Automatic progress updates</h2>
-  <p>So the hunt maker's map can update as treasures are found, hunters'
-  progress (which points have been found — never live location) syncs through
-  <strong>Apple's iCloud</strong> as small <strong>end-to-end encrypted</strong>
-  records: the encryption key travels only inside the hunt's own encrypted
-  link, so iCloud, Apple, and the developer see only unreadable ciphertext
-  stored under a random, unguessable name. No account is created — the sync
-  rides on the device's existing iCloud sign-in, and phones without iCloud
-  simply fall back to the manual "Send progress" links.</p>
+  <h2>Nothing reports back</h2>
+  <p>Which treasures a hunter has found stays on that hunter's phone, full
+  stop. The person who made a hunt is never told who found what, or when, and
+  there is no server, link or sync that could carry it — because a hunt's
+  points are real places, and "found point 3 at 2:41pm" would be a record of
+  where a child had been. The app is built so that record never exists.</p>
 
   <h2>This website</h2>
   <p>This site is a static page hosted on GitHub Pages. It exists to describe
@@ -71,12 +69,11 @@
 
   <h2>Third parties</h2>
   <ul>
-    <li><strong>Apple Maps</strong> provides the map imagery in the app, and
-        <strong>Apple iCloud (CloudKit)</strong> carries the encrypted progress
-        records, both under
+    <li><strong>Apple Maps</strong> provides the map imagery and walking
+        directions in the app, under
         <a href="https://www.apple.com/legal/privacy/">Apple's privacy policy</a>.</li>
     <li>There are no other third parties. No data is sold or shared — the app
-        has no readable data to sell.</li>
+        has no data to sell.</li>
   </ul>
 
   <h2>Children</h2>

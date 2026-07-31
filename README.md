@@ -82,23 +82,16 @@ time. Development builds fetch the association file straight from the site
 Domains Development toggle); App Store/TestFlight builds go through Apple's
 CDN, which can lag a new domain by a few hours.
 
-## Progress updates
+## Nothing reports back
 
-**Automatic (CloudKit):** hunts created since this feature carry a random
-sync token and an AES key inside their encrypted share payload. When a hunter
-digs up a point, their found-set is sealed with that key and saved to a
-CloudKit *public-database* record named by the token (`ProgressSync.swift`,
-modelled on CycleHUD's live tracking) — iCloud stores ciphertext only. The
-maker's created-hunt screen polls every 20 s while open and merges all
-hunters' finds. Requires the hunter's device to be signed into iCloud;
-before shipping to TestFlight/App Store, deploy the CloudKit schema to
-Production in the CloudKit Console (the `XMarksProgress` record type is
-created automatically on first run in Development).
+There is deliberately no channel for a hunt's creator to learn how hunters are
+getting on. Found points live only on the hunter's own device: no progress
+links, no CloudKit sync, nothing in the share payload travelling the other
+way, and the creator's own screen shows their points without any found-state.
 
-**Manual fallback:** the hunt map and prize screen keep **Send progress** /
-**Tell the hunt maker!** buttons that share an encrypted `/progress/` link;
-tapping it on any phone that has the hunt merges the found points in. Also
-syncs siblings' copies if they share with each other.
+This is a safety property, not an oversight. A hunt's points are real
+locations, so "point 3 found at 14:32" is a record of where a child was and
+when — the app is built so that record never exists.
 
 ## Look and feel
 
@@ -115,7 +108,7 @@ over to an animated splash (`SplashView.swift`).
 Run the app in the iOS simulator and a **Demo** wand button appears in the
 home toolbar (it's compiled out of device builds). Tapping it seeds three
 Central Park hunts: one mid-hunt (2/4 found), one solved (prize + confetti
-ready), and one "made by me" with a progress report arrived — instant
+ready), and one "made by me" — instant
 screenshot material for the site and App Store.
 
 To play the hunt in the simulator, drive the location:

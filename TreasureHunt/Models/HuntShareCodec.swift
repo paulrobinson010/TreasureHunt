@@ -14,16 +14,14 @@ enum HuntShareCodec {
     /// Pre-rebrand host, still accepted on import so old links keep working.
     static let legacyWebHost = "treasurehunt.robbo-online.uk"
 
-    /// Only what the recipient needs — progress and role stay on each device.
-    /// The sync token/key ride along so hunters can publish automatic
-    /// progress updates the maker can read.
+    /// Only what the recipient needs. Nothing travels back the other way:
+    /// there is deliberately no channel for a hunt's creator to learn who
+    /// found what, or when.
     private struct Payload: Codable {
         var id: UUID
         var name: String
         var prize: String
         var points: [TreasurePoint]
-        var syncToken: String?
-        var syncKey: Data?
         var sequential: Bool?
         var startsAt: Date?
         var endsAt: Date?
@@ -39,17 +37,9 @@ enum HuntShareCodec {
         var signature: Data?
     }
 
-    /// A hunter's progress, sent back to the hunt maker (or a sibling's copy).
-    struct ProgressReport: Codable {
-        var huntID: UUID
-        var name: String
-        var foundPointIDs: Set<UUID>
-    }
-
     /// Everything a shared link can contain.
     enum Decoded {
         case hunt(Hunt, sender: CrewCard?)
-        case progress(ProgressReport)
         case crewInvite(CrewCard)
     }
 
@@ -60,7 +50,6 @@ enum HuntShareCodec {
     static func sealedData(for hunt: Hunt) throws -> Data {
         let payload = try JSONEncoder().encode(
             Payload(id: hunt.id, name: hunt.name, prize: hunt.prize, points: hunt.points,
-                    syncToken: hunt.syncToken, syncKey: hunt.syncKeyData,
                     sequential: hunt.sequential, startsAt: hunt.startsAt, endsAt: hunt.endsAt)
         )
         let envelope = Envelope(
@@ -101,19 +90,6 @@ enum HuntShareCodec {
         return url
     }
 
-    /// https://treasurehunt.robbo-online.uk/progress/?p=<base64url sealed report>
-    static func progressURL(for hunt: Hunt) throws -> URL {
-        let raw = try JSONEncoder().encode(
-            ProgressReport(huntID: hunt.id, name: hunt.name, foundPointIDs: hunt.foundPointIDs)
-        )
-        let compressed = try (raw as NSData).compressed(using: .zlib) as Data
-        let sealed = try HuntCrypto.encrypt(compressed)
-        guard let url = URL(string: "https://\(webHost)/progress/?p=\(base64url(sealed))") else {
-            throw CocoaError(.coderInvalidValue)
-        }
-        return url
-    }
-
     private static func base64url(_ data: Data) -> String {
         data.base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
@@ -134,8 +110,8 @@ enum HuntShareCodec {
 
     // MARK: Decoding
 
-    /// Routes any incoming link/file to what it contains: a hunt, a progress
-    /// report, or a crew handshake invite.
+    /// Routes any incoming link/file to what it contains: a hunt, or a crew
+    /// handshake invite.
     static func decode(url: URL) -> Decoded? {
         let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         func query(_ name: String) -> String? {
@@ -150,9 +126,6 @@ enum HuntShareCodec {
             return nil
         }()
 
-        if section == "progress", let code = query("p") {
-            return progressReport(fromCode: code).map { .progress($0) }
-        }
         if section == "crew", let code = query("k") {
             return crewCard(fromCode: code).map { .crewInvite($0) }
         }
@@ -160,13 +133,6 @@ enum HuntShareCodec {
             return .hunt(found.0, sender: found.1)
         }
         return huntAndSender(fromURL: url).map { .hunt($0.0, sender: $0.1) }
-    }
-
-    static func progressReport(fromCode code: String) -> ProgressReport? {
-        guard let sealed = base64urlDecode(code),
-              let compressed = try? HuntCrypto.decrypt(sealed),
-              let raw = try? (compressed as NSData).decompressed(using: .zlib) as Data else { return nil }
-        return try? JSONDecoder().decode(ProgressReport.self, from: raw)
     }
 
     /// Handles universal links, legacy treasurehunt:// links, and opened
@@ -242,8 +208,6 @@ enum HuntShareCodec {
             points: payload.points,
             role: .received,
             createdAt: .now,
-            syncToken: payload.syncToken,
-            syncKeyData: payload.syncKey,
             sequential: payload.sequential ?? false,
             startsAt: payload.startsAt,
             endsAt: payload.endsAt

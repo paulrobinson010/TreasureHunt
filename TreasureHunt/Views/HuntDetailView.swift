@@ -31,23 +31,14 @@ struct CreatedHuntView: View {
     let hunt: Hunt
     @State private var sharing = false
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
-    #if DEBUG
-    @State private var syncTestResult: String?
-    #endif
 
     var body: some View {
         VStack(spacing: 0) {
             Map(initialPosition: .region(hunt.pointsRegion)) {
                 UserAnnotation()
                 ForEach(Array(hunt.points.enumerated()), id: \.element.id) { index, point in
-                    Annotation(
-                        hunt.isFound(point) ? "Found!" : "Point \(index + 1)",
-                        coordinate: point.coordinate
-                    ) {
-                        LogoMarker(
-                            badge: hunt.isFound(point) ? .found : .number(index + 1),
-                            ring: hunt.isFound(point) ? .green : .brandRed
-                        )
+                    Annotation("Point \(index + 1)", coordinate: point.coordinate) {
+                        LogoMarker(badge: .number(index + 1))
                     }
                 }
             }
@@ -61,8 +52,10 @@ struct CreatedHuntView: View {
                     .padding(8)
             }
             List {
-                Section("Hunters' progress") {
-                    huntersProgress
+                Section("Private to your hunters") {
+                    Text("How your hunters are getting on stays on their own phones. X-Marks never reports back where anyone has been — ask them over tea instead!")
+                        .font(.fun(13))
+                        .foregroundStyle(.secondary)
                 }
                 .listRowBackground(Color.brandCard)
                 Section("Prize") {
@@ -77,28 +70,6 @@ struct CreatedHuntView: View {
                     }
                 }
                 .listRowBackground(Color.brandCard)
-                #if DEBUG
-                Section("Sync test (debug builds only)") {
-                    Button("Test CloudKit sync now") {
-                        syncTestResult = "Testing…"
-                        ProgressSync.push(hunt: hunt) { outcome in
-                            syncTestResult = outcome
-                        }
-                    }
-                    Button("Check for hunter updates now") {
-                        syncTestResult = "Checking…"
-                        ProgressSync.debugStatus(hunt: hunt) { outcome in
-                            syncTestResult = outcome
-                        }
-                    }
-                    if let syncTestResult {
-                        Text(syncTestResult)
-                            .font(.fun(12))
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .listRowBackground(Color.brandCard)
-                #endif
             }
             .scrollContentBackground(.hidden)
             .background(OceanBackground())
@@ -109,38 +80,8 @@ struct CreatedHuntView: View {
         .sheet(isPresented: $sharing) {
             ShareHuntView(hunt: hunt)
         }
-        // Live refresh while this screen is open; the task cancels on leave.
-        .task {
-            while !Task.isCancelled {
-                ProgressSync.fetch(hunt: hunt) { found in
-                    if let found {
-                        store.applyRemoteProgress(huntID: hunt.id, foundPointIDs: found)
-                    }
-                }
-                try? await Task.sleep(for: .seconds(20))
-            }
-        }
     }
 
-    @ViewBuilder
-    private var huntersProgress: some View {
-        if hunt.foundPointIDs.isEmpty {
-            Text(hunt.syncToken != nil
-                 ? "Nothing found yet — this map updates by itself as treasures are dug up. ✨"
-                 : "Nothing found yet. When a hunter taps \"Send progress\" in their app, this map updates.")
-                .font(.fun(13))
-                .foregroundStyle(.secondary)
-        } else {
-            Text(hunt.isSolved
-                 ? "Complete — all \(hunt.points.count) treasures found! 🎉"
-                 : "\(hunt.foundPointIDs.count) of \(hunt.points.count) treasures found")
-            if let updated = hunt.progressUpdatedAt {
-                Text("Last update \(updated.formatted(date: .abbreviated, time: .shortened))")
-                    .font(.fun(12))
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
 }
 
 private extension Hunt {

@@ -48,8 +48,6 @@ enum ImportResult {
     case imported(String, from: String?)
     case duplicate(String)
     case crewJoined(String, isNew: Bool)
-    case progress(String, Int, Int)
-    case progressUnknown(String)
     case failed
 
     var message: String {
@@ -65,12 +63,6 @@ enum ImportResult {
                 : "\(name) is already in your crew."
         case .duplicate(let name):
             return "You already have \"\(name)\"."
-        case .progress(let name, let found, let total):
-            return found == total
-                ? "\"\(name)\" is COMPLETE — all \(total) treasures found! 🎉"
-                : "\"\(name)\": \(found) of \(total) treasures found so far!"
-        case .progressUnknown(let name):
-            return "That progress update is for \"\(name)\", which isn't on this phone."
         case .failed:
             return "That link didn't contain a valid treasure hunt."
         }

@@ -46,13 +46,13 @@ extension HuntStore {
         )
         playgroundGold.foundPointIDs = Set(goldPoints.map(\.id))
 
-        // Made by me, with a progress report arrived.
+        // Made by me — the creator never learns how hunters are getting on.
         let adventurePoints = [
             TreasurePoint(coordinate: .init(latitude: 40.77210, longitude: -73.97435)), // Strawberry Fields
             TreasurePoint(coordinate: .init(latitude: 40.77436, longitude: -73.97821)),
             TreasurePoint(coordinate: .init(latitude: 40.77693, longitude: -73.97656)),
         ]
-        var saturday = Hunt(
+        let saturday = Hunt(
             id: UUID(),
             name: "Saturday Adventure",
             prize: "Movie night + popcorn 🍿",
@@ -60,8 +60,6 @@ extension HuntStore {
             role: .created,
             createdAt: .now.addingTimeInterval(-7200)
         )
-        saturday.foundPointIDs = [adventurePoints[0].id]
-        saturday.progressUpdatedAt = .now.addingTimeInterval(-600)
 
         add(saturday)
         add(playgroundGold)

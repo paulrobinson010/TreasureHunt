@@ -141,12 +141,6 @@ struct PlayHuntView: View {
                     .font(.fun(13))
                     .foregroundStyle(.secondary)
             }
-            if !hunt.foundPointIDs.isEmpty, let url = try? HuntShareCodec.progressURL(for: hunt) {
-                ShareLink(item: progressMessage(for: hunt, url: url)) {
-                    Label("Send progress to the hunt maker", systemImage: "paperplane.fill")
-                        .font(.fun(13))
-                }
-            }
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -176,10 +170,6 @@ struct PlayHuntView: View {
             .background(.ultraThinMaterial, in: Capsule())
             .shadow(radius: 3)
         }
-    }
-
-    private func progressMessage(for hunt: Hunt, url: URL) -> String {
-        "🧭 \"\(hunt.name)\": I've found \(hunt.foundPointIDs.count) of \(hunt.points.count) treasures! Tap to update your map: \(url.absoluteString)"
     }
 
     private func hint(for hunt: Hunt) -> String? {
@@ -301,10 +291,6 @@ struct PlayHuntView: View {
         FeedbackManager.shared.stopDetector()
         activePoint = nil
         store.markFound(point, in: hunt)
-        // Automatic progress update — the maker's map refreshes itself.
-        if let updated = store.hunt(id: huntID) {
-            ProgressSync.push(hunt: updated)
-        }
         if store.hunt(id: huntID)?.isSolved == true {
             FeedbackManager.shared.solvedFanfare()
             showPrize = true

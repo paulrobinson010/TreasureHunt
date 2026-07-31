@@ -147,23 +147,9 @@ struct ContentView: View {
             .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
                 if let url = activity.webpageURL { handle(url: url) }
             }
-            .task { refreshCreatedHunts() }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { refreshCreatedHunts() }
                 // Phone handed back to a child shouldn't still be unlocked.
                 if phase == .background { gate.lock() }
-            }
-        }
-    }
-
-    /// Pull hunters' automatic updates for every hunt made on this phone, so
-    /// progress dots light up from the home screen — not only inside a hunt.
-    private func refreshCreatedHunts() {
-        for hunt in store.hunts where hunt.role == .created && hunt.syncToken != nil {
-            ProgressSync.fetch(hunt: hunt) { found in
-                if let found {
-                    store.applyRemoteProgress(huntID: hunt.id, foundPointIDs: found)
-                }
             }
         }
     }
@@ -245,12 +231,6 @@ struct ContentView: View {
                 let isNew = crew.add(card)
                 importResult = .crewJoined(card.name, isNew: isNew)
             }
-        case .progress(let report):
-            if let updated = store.applyProgress(report) {
-                importResult = .progress(updated.name, updated.foundPointIDs.count, updated.points.count)
-            } else {
-                importResult = .progressUnknown(report.name)
-            }
         }
     }
 
@@ -284,7 +264,7 @@ struct HuntRow: View {
                     .font(.fun(12))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
-                if hunt.points.count <= 12 {
+                if hunt.role == .received, hunt.points.count <= 12 {
                     HStack(spacing: 4) {
                         ForEach(Array(hunt.points.enumerated()), id: \.element.id) { index, point in
                             Circle()

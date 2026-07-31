@@ -48,15 +48,10 @@ struct Hunt: Identifiable, Codable {
     var points: [TreasurePoint]
     var role: HuntRole
     var createdAt: Date
+    /// Which points this phone's hunter has found. Deliberately never leaves
+    /// the device: telling a hunt's creator that a point was found is telling
+    /// them where a child was and when, so there is no channel for it.
     var foundPointIDs: Set<UUID> = []
-    /// When a hunter last sent progress back (hunts you created).
-    var progressUpdatedAt: Date? = nil
-    /// Automatic progress sync (CloudKit): unguessable record token and the
-    /// end-to-end key. Travel inside the encrypted share payload, so maker
-    /// and hunters share them but iCloud never sees the key. Nil on hunts
-    /// shared before this feature — those use the manual progress links.
-    var syncToken: String? = nil
-    var syncKeyData: Data? = nil
     /// Points must be found in order (1, 2, 3…) instead of any order.
     var sequential: Bool = false
     /// Optional embargo: the hunt can be held, previewed and counted down to,

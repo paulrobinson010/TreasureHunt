@@ -26,13 +26,6 @@ struct PrizeRevealView: View {
             }
             .padding(.horizontal)
 
-            if hunt.role == .received, let url = try? HuntShareCodec.progressURL(for: hunt) {
-                ShareLink(item: "🏆 I completed \"\(hunt.name)\" — all \(hunt.points.count) treasures found! Tap to update your map: \(url.absoluteString)") {
-                    Label("Tell the hunt maker!", systemImage: "party.popper.fill")
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.brandRed)
-            }
         }
         .padding(.vertical, 40)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
