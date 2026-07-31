@@ -153,6 +153,15 @@ the reported GPS uncertainty (capped at `maxDigRadius`), because a phone
 reporting ±6 m can never measure a distance under 3 m even standing on the
 treasure.
 
+## Grown-up check
+
+Making a hunt (which means placing real-world locations) and opening **My
+Crew** (which changes who may send hunts to this phone) sit behind a parental
+gate: a multiplication written in words — "seven × twelve" — so it takes
+reading as well as arithmetic. A wrong answer re-rolls the sum, so guessing
+can't wear it down. One pass unlocks ten minutes of grown-up work, and
+backgrounding the app re-locks it. See `ParentGate.swift`.
+
 ## Crew: who can send you hunts
 
 Every phone has a hunting identity — a display name plus a Curve25519 signing

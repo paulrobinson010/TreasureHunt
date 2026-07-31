@@ -4,7 +4,9 @@ struct ContentView: View {
     @EnvironmentObject private var store: HuntStore
     @EnvironmentObject private var crew: CrewStore
     @Environment(\.scenePhase) private var scenePhase
+    @StateObject private var gate = ParentGate()
     @State private var creating = false
+    @State private var showingCrew = false
     @State private var importing = false
     @State private var importText = ""
     @State private var importFailed = false
@@ -72,8 +74,8 @@ struct ContentView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        CrewView()
+                    Button {
+                        gate.guarding { showingCrew = true }
                     } label: {
                         Image(systemName: "person.2.fill")
                     }
@@ -89,7 +91,7 @@ struct ContentView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        creating = true
+                        gate.guarding { creating = true }
                     } label: {
                         Label("New hunt", systemImage: "plus")
                     }
@@ -98,6 +100,10 @@ struct ContentView: View {
             .fullScreenCover(isPresented: $creating) {
                 CreateHuntView()
             }
+            .navigationDestination(isPresented: $showingCrew) {
+                CrewView()
+            }
+            .parentGate(gate)
             .alert("Import a hunt", isPresented: $importing) {
                 TextField("Paste the link here", text: $importText)
                 Button("Import") { runImport() }
@@ -111,6 +117,8 @@ struct ContentView: View {
             .task { refreshCreatedHunts() }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active { refreshCreatedHunts() }
+                // Phone handed back to a child shouldn't still be unlocked.
+                if phase == .background { gate.lock() }
             }
         }
     }
