@@ -146,14 +146,29 @@ the reported GPS uncertainty (capped at `maxDigRadius`), because a phone
 reporting ±6 m can never measure a distance under 3 m even standing on the
 treasure.
 
-## Grown-up check
+## Device roles — the main safety boundary
 
-Making a hunt (which means placing real-world locations) and opening **My
-Crew** (which changes who may send hunts to this phone) sit behind a parental
-gate: a multiplication written in words — "seven × twelve" — so it takes
-reading as well as arithmetic. A wrong answer re-rolls the sum, so guessing
-can't wear it down. One pass unlocks ten minutes of grown-up work, and
-backgrounding the app re-locks it. See `ParentGate.swift`.
+Hunts point at real places, so the question "who may send a child to one?"
+cannot rest on a puzzle the child could solve or a prompt a stranger could
+talk them through. On first run a grown-up says what the phone is
+(`SetupView`, `DeviceRole.swift`):
+
+- **A grown-up's phone** — makes hunts, decides the crew, hunts too. Grown-up
+  actions sit behind a sum written in words ("seven × twelve"), which only has
+  to stop a child wandering in; a wrong answer re-rolls it.
+- **A young hunter's phone** — hunting only. There is no create button at all,
+  and grown-up actions need the **passcode** set when the phone was handed
+  over, not a sum.
+
+The consequence that matters: on a hunter's phone a hunt from anyone not
+already in the crew is **refused outright** — no accept button, however
+persuasive the sender or the child. Knowing a child's phone number gets you
+nowhere. Adding a trusted person is a separate, deliberate act needing the
+passcode, so it happens when a grown-up chooses, not in the excitement of a
+hunt that has just landed.
+
+One pass unlocks ten minutes of grown-up work; backgrounding the app
+re-locks it.
 
 ## Crew: who can send you hunts
 

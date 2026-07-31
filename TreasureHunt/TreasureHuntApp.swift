@@ -48,6 +48,7 @@ enum ImportResult {
     case imported(String, from: String?)
     case duplicate(String)
     case crewJoined(String, isNew: Bool)
+    case senderNotAllowed(String?)
     case failed
 
     var message: String {
@@ -61,6 +62,9 @@ enum ImportResult {
             return isNew
                 ? "\(name) has joined your crew! Send your card back so they can add you too."
                 : "\(name) is already in your crew."
+        case .senderNotAllowed(let name):
+            let who = name.map { "\($0) isn't" } ?? "Whoever sent that hunt isn't"
+            return "\(who) in your crew, so the hunt wasn't opened. A grown-up can add them from their own phone."
         case .duplicate(let name):
             return "You already have \"\(name)\"."
         case .failed:

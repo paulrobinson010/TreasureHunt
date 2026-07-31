@@ -13,6 +13,9 @@ struct ContentView: View {
     @State private var importResult: ImportResult?
     /// A hunt from someone not yet in the crew, waiting on a grown-up.
     @State private var invite: HuntInvite?
+    /// Backed by the same key DeviceSetup writes, so clearing the role
+    /// brings the setup screen straight back.
+    @AppStorage("deviceRole") private var deviceRoleRaw = ""
 
     struct HuntInvite: Identifiable {
         let hunt: Hunt
@@ -43,7 +46,9 @@ struct ContentView: View {
                         Text("No treasure hunts yet!")
                             .font(.fun(22, .bold))
                             .foregroundStyle(Color.brandSand)
-                        Text("Make a hunt with + and send it to your hunters, or import one that was sent to you.")
+                        Text(DeviceSetup.role?.canCreateHunts ?? true
+                             ? "Make a hunt with + and send it to your hunters, or import one that was sent to you."
+                             : "When a grown-up in your crew sends you a hunt, it will appear here. Happy hunting!")
                             .font(.fun(14))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -98,16 +103,25 @@ struct ContentView: View {
                     }
                     .accessibilityLabel("My treasure chest")
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        gate.guarding { creating = true }
-                    } label: {
-                        Label("New hunt", systemImage: "plus")
+                if DeviceSetup.role?.canCreateHunts ?? false {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            gate.guarding { creating = true }
+                        } label: {
+                            Label("New hunt", systemImage: "plus")
+                        }
                     }
                 }
             }
             .fullScreenCover(isPresented: $creating) {
                 CreateHuntView()
+            }
+            .fullScreenCover(isPresented: Binding(
+                get: { deviceRoleRaw.isEmpty },
+                set: { _ in }
+            )) {
+                SetupView {}
+                    .interactiveDismissDisabled()
             }
             .navigationDestination(isPresented: $showingCrew) {
                 CrewView()
@@ -223,6 +237,12 @@ struct ContentView: View {
             } else if let sender, crew.contains(publicKey: sender.publicKey) {
                 store.importHunt(hunt)
                 importResult = .imported(hunt.name, from: "\(sender.name) ✓")
+            } else if DeviceSetup.isHunterPhone {
+                // No accept button on a hunter's phone, whoever is standing
+                // over it. Trusting a person is a decision a grown-up makes
+                // deliberately, on their own phone — not one taken under the
+                // excitement of a hunt that has just arrived.
+                importResult = .senderNotAllowed(sender?.name)
             } else {
                 invite = HuntInvite(hunt: hunt, sender: sender)
             }

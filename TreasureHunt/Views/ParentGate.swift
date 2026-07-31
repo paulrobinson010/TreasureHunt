@@ -1,31 +1,35 @@
 import SwiftUI
 
-/// A grown-up check in front of the things children shouldn't do alone:
-/// making hunts (which means placing real-world locations) and changing who
-/// is allowed to send hunts to this phone.
+/// A grown-up check in front of the things children shouldn't do alone.
 ///
-/// The sum is written in words, so it needs reading *and* arithmetic — a
-/// five-year-old bounces off it, a grown-up barely notices it.
+/// On a grown-up's phone that's a sum written in words — enough to keep a
+/// child from wandering into hunt-making. On a young hunter's phone it is the
+/// grown-up's passcode instead, because a sum only proves someone can do
+/// arithmetic, and a stranger can talk a child through arithmetic.
 @MainActor
 final class ParentGate: ObservableObject {
     @Published var challenge: Challenge?
     @Published var wrongAnswer = false
 
-    /// One pass covers a stretch of grown-up work — nobody wants a sum
+    /// One pass covers a stretch of grown-up work — nobody wants a check
     /// between every hunt they make.
     private var unlockedUntil = Date.distantPast
     private let unlockMinutes: TimeInterval = 10 * 60
     private var pending: (() -> Void)?
 
-    struct Challenge {
-        let a: Int
-        let b: Int
+    enum Challenge {
+        case sum(a: Int, b: Int)
+        case passcode
 
-        var answer: Int { a * b }
-        var question: String { "\(Self.word(a)) × \(Self.word(b))" }
+        var prompt: String {
+            switch self {
+            case .sum(let a, let b): "\(Self.word(a)) × \(Self.word(b))"
+            case .passcode: "Enter the grown-up passcode"
+            }
+        }
 
-        static func random() -> Challenge {
-            Challenge(a: Int.random(in: 3...9), b: Int.random(in: 4...12))
+        static func sum() -> Challenge {
+            .sum(a: Int.random(in: 3...9), b: Int.random(in: 4...12))
         }
 
         private static func word(_ n: Int) -> String {
@@ -44,18 +48,31 @@ final class ParentGate: ObservableObject {
         }
         pending = action
         wrongAnswer = false
-        challenge = .random()
+        challenge = nextChallenge()
+    }
+
+    private func nextChallenge() -> Challenge {
+        // A hunter's phone always needs the passcode set by the grown-up who
+        // handed the phone over. Only if none was set does it fall back.
+        if DeviceSetup.isHunterPhone, DeviceSetup.hasPasscode {
+            return .passcode
+        }
+        return .sum()
     }
 
     func submit(_ text: String) {
-        guard let challenge, let answer = Int(text.trimmingCharacters(in: .whitespaces)) else {
-            wrongAnswer = true
-            return
+        guard let challenge else { return }
+        let ok: Bool
+        switch challenge {
+        case .sum(let a, let b):
+            ok = Int(text.trimmingCharacters(in: .whitespaces)) == a * b
+        case .passcode:
+            ok = DeviceSetup.verify(text)
         }
-        guard answer == challenge.answer else {
-            // A fresh sum each time, so guessing can't wear it down.
+        guard ok else {
             wrongAnswer = true
-            self.challenge = .random()
+            // A fresh sum each time, so guessing can't wear it down.
+            if case .sum = challenge { self.challenge = .sum() }
             return
         }
         unlockedUntil = .now.addingTimeInterval(unlockMinutes)
@@ -84,6 +101,11 @@ struct ParentGateView: View {
     @State private var typed = ""
     @FocusState private var focused: Bool
 
+    private var isPasscode: Bool {
+        if case .passcode = challenge { return true }
+        return false
+    }
+
     var body: some View {
         VStack(spacing: 18) {
             Text("🔒")
@@ -91,25 +113,27 @@ struct ParentGateView: View {
             Text("Ask a grown-up!")
                 .font(.fun(24, .bold))
                 .foregroundStyle(Color.brandSand)
-            Text("Grown-ups make the hunts. What is…")
-                .font(.fun(14))
-                .foregroundStyle(.secondary)
 
-            Text(challenge.question)
-                .font(.fun(30, .bold))
-                .foregroundStyle(Color.brandCyan)
-                .multilineTextAlignment(.center)
+            if isPasscode {
+                Text("This is a young hunter's phone. The grown-up who set it up has the passcode.")
+                    .font(.fun(14))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            } else {
+                Text("Grown-ups make the hunts. What is…")
+                    .font(.fun(14))
+                    .foregroundStyle(.secondary)
+                Text(challenge.prompt)
+                    .font(.fun(30, .bold))
+                    .foregroundStyle(Color.brandCyan)
+                    .multilineTextAlignment(.center)
+            }
 
-            TextField("Answer", text: $typed)
-                .keyboardType(.numberPad)
-                .multilineTextAlignment(.center)
-                .font(.fun(24, .bold).monospacedDigit())
-                .padding(.vertical, 10)
-                .background(Color.brandCard, in: RoundedRectangle(cornerRadius: 14))
+            SecureOrPlainField(text: $typed, secure: isPasscode)
                 .focused($focused)
 
             if gate.wrongAnswer {
-                Text("Not quite — have another go.")
+                Text(isPasscode ? "That passcode isn't right." : "Not quite — have another go.")
                     .font(.fun(13))
                     .foregroundStyle(Color.brandRed)
             }
@@ -139,6 +163,28 @@ struct ParentGateView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(OceanBackground())
         .onAppear { focused = true }
+    }
+}
+
+/// Passcodes are masked; sums aren't — a grown-up shouldn't have to type
+/// blind to prove they can multiply.
+struct SecureOrPlainField: View {
+    @Binding var text: String
+    let secure: Bool
+
+    var body: some View {
+        Group {
+            if secure {
+                SecureField("Passcode", text: $text)
+            } else {
+                TextField("Answer", text: $text)
+            }
+        }
+        .keyboardType(.numberPad)
+        .multilineTextAlignment(.center)
+        .font(.fun(24, .bold).monospacedDigit())
+        .padding(.vertical, 10)
+        .background(Color.brandCard, in: RoundedRectangle(cornerRadius: 14))
     }
 }
 
