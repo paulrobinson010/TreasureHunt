@@ -69,8 +69,17 @@ extension HuntStore {
 
         // A part-filled chest for the collection screenshot.
         if loot.isEmpty {
-            for (emoji, name) in [("💎", "Sparkly Diamond"), ("🦜", "Chatty Parrot"), ("🗝️", "Mystery Key"), ("🐚", "Singing Seashell"), ("👑", "Pirate Crown")] {
-                collect(LootItem(id: UUID(), emoji: emoji, name: name, huntName: "Playground Gold", date: .now.addingTimeInterval(-86400)))
+            let items: [(String, String, Double?)] = [
+                ("💎", "Blue Diamond", 0),
+                ("💎", "Ruby Red Gem", 160),
+                ("💎", "Emerald Gem", -80),
+                ("🦜", "Chatty Parrot", nil),
+                ("👑", "Pirate Crown", nil),
+            ]
+            for (emoji, name, hue) in items {
+                collect(LootItem(id: UUID(), emoji: emoji, name: name,
+                                 huntName: "Playground Gold",
+                                 date: .now.addingTimeInterval(-86400), hue: hue))
             }
         }
     }

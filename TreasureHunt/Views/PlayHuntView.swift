@@ -6,10 +6,10 @@ import SwiftUI
 struct PlayHuntView: View {
     @EnvironmentObject private var store: HuntStore
     @StateObject private var locationManager = LocationManager()
+    @StateObject private var routeProvider = WalkingRouteProvider()
     let huntID: UUID
 
-    /// Heading-up follow: the way you're walking is up on the screen.
-    @State private var camera: MapCameraPosition = .userLocation(followsHeading: true, fallback: .automatic)
+    @State private var camera: MapCameraPosition = HuntMapMode.free.cameraPosition
     @State private var activePoint: TreasurePoint?
     @State private var showPrize = false
     @State private var trail: [CLLocationCoordinate2D] = []
@@ -19,6 +19,7 @@ struct PlayHuntView: View {
     /// Current map rotation, so the guide arrow can point in screen space.
     @State private var cameraHeading: Double = 0
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
+    @AppStorage("huntMapMode") private var mapMode: HuntMapMode = .free
 
     private var hunt: Hunt? { store.hunt(id: huntID) }
 
@@ -29,8 +30,15 @@ struct PlayHuntView: View {
                     // Equatable child: location ticks re-render the overlays
                     // below, but never the map itself — re-rendering a map
                     // mid-gesture cancels the gesture.
-                    HuntMap(hunt: hunt, trail: trail, flavor: mapFlavor, camera: $camera)
-                        .equatable()
+                    HuntMap(
+                        hunt: hunt,
+                        trail: trail,
+                        flavor: mapFlavor,
+                        mode: mapMode,
+                        route: mapMode == .path ? routeProvider.route : nil,
+                        camera: $camera
+                    )
+                    .equatable()
                     statusBar(for: hunt)
                 }
                 // Coarse threshold: the arrow only needs rough map rotation,
@@ -41,14 +49,17 @@ struct PlayHuntView: View {
                     }
                 }
                 .overlay(alignment: .top) {
-                    guidePointer(for: hunt)
-                        .padding(.top, 8)
+                    VStack(spacing: 8) {
+                        MapModePicker(mode: $mapMode)
+                        guidePointer(for: hunt)
+                    }
+                    .padding(.top, 8)
                 }
                 .overlay(alignment: .topTrailing) {
                     VStack(spacing: 8) {
                         MapStyleButton(flavor: $mapFlavor)
                         Button {
-                            camera = .userLocation(followsHeading: true, fallback: .automatic)
+                            recentre()
                         } label: {
                             Image(systemName: "location.north.line.fill")
                                 .font(.system(size: 18, weight: .semibold))
@@ -91,11 +102,25 @@ struct PlayHuntView: View {
         .onChange(of: locationManager.location) { _, newLocation in
             update(with: newLocation)
         }
+        .onChange(of: mapMode) { _, newMode in
+            camera = newMode.cameraPosition
+            if newMode == .path {
+                updateRoute()
+            } else {
+                routeProvider.clear()
+            }
+        }
         .sheet(isPresented: $showPrize) {
             if let hunt {
                 PrizeRevealView(hunt: hunt)
             }
         }
+    }
+
+    private func recentre() {
+        camera = mapMode.followsHunter
+            ? mapMode.cameraPosition
+            : .userLocation(followsHeading: false, fallback: .automatic)
     }
 
     private func statusBar(for hunt: Hunt) -> some View {
@@ -171,14 +196,23 @@ struct PlayHuntView: View {
         return "\(label) is about \(DistanceText.string((distance / 10).rounded() * 10)) away"
     }
 
+    private func updateRoute() {
+        guard mapMode == .path,
+              let location = locationManager.location,
+              let hunt, !hunt.isSolved,
+              let target = hunt.targetPoint(from: location.coordinate) else { return }
+        routeProvider.update(from: location.coordinate, to: target)
+    }
+
     private func update(with location: CLLocation?) {
         guard let location else { return }
         recordTrail(location)
+        updateRoute()
         guard let hunt, !hunt.isSolved,
               let nearest = hunt.targetPoint(from: location.coordinate) else { return }
         let distance = GeoMath.distance(from: location.coordinate, to: nearest.coordinate)
 
-        if distance <= Config.foundRadius {
+        if distance <= Config.digRadius(accuracy: location.horizontalAccuracy) {
             // Reached the X — time to dig, not to auto-find.
             guard digPoint == nil else { return }
             FeedbackManager.shared.stopDetector()
@@ -206,6 +240,8 @@ struct PlayHuntView: View {
         let hunt: Hunt
         let trail: [CLLocationCoordinate2D]
         let flavor: MapFlavor
+        let mode: HuntMapMode
+        let route: MKPolyline?
         @Binding var camera: MapCameraPosition
 
         static func == (a: Self, b: Self) -> Bool {
@@ -213,11 +249,17 @@ struct PlayHuntView: View {
                 && a.hunt.foundPointIDs == b.hunt.foundPointIDs
                 && a.trail.count == b.trail.count
                 && a.flavor == b.flavor
+                && a.mode == b.mode
+                && a.route === b.route
         }
 
         var body: some View {
-            Map(position: $camera) {
+            Map(position: $camera, interactionModes: mode.interactionModes) {
                 UserAnnotation()
+                if let route {
+                    MapPolyline(route)
+                        .stroke(Color.brandLime, style: StrokeStyle(lineWidth: 7, lineCap: .round, lineJoin: .round))
+                }
                 if trail.count > 1 {
                     // Dotted footsteps, like the trail on the island logo.
                     MapPolyline(coordinates: trail)
@@ -269,5 +311,7 @@ struct PlayHuntView: View {
         } else {
             FeedbackManager.shared.pointFanfare()
         }
+        routeProvider.clear()
+        updateRoute()
     }
 }

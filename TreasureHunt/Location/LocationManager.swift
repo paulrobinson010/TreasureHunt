@@ -53,12 +53,12 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let new = locations.last else { return }
-        // Throttle: GPS jitter delivers an update every second even standing
-        // still, and each publish re-renders whole screens — which can cancel
-        // an in-flight map gesture. Only publish real movement.
+        // Light throttle only: the maps are isolated from these updates now,
+        // and being too stingy here made the dig trigger unreliable — a
+        // hunter could walk through the 3 m window between publishes.
         if let old = location,
-           new.distance(from: old) < 2,
-           new.timestamp.timeIntervalSince(old.timestamp) < 5 {
+           new.distance(from: old) < 1,
+           new.timestamp.timeIntervalSince(old.timestamp) < 1.5 {
             return
         }
         location = new

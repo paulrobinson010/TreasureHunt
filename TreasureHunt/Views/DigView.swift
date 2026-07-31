@@ -36,6 +36,8 @@ struct DigView: View {
                         .shadow(color: Color.brandSand.opacity(0.6), radius: 18)
                     Text(loot.emoji)
                         .font(.system(size: 64))
+                        .hueRotation(.degrees(loot.hue ?? 0))
+                        .saturation(loot.hue == nil ? 1 : 1.35)
                     Text("You dug up a \(loot.name)!")
                         .font(.fun(19, .semibold))
                         .foregroundStyle(.white)

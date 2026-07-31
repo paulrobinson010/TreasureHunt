@@ -38,6 +38,8 @@ struct TreasureChestView: View {
                             VStack(spacing: 4) {
                                 Text(item.emoji)
                                     .font(.system(size: 42))
+                                    .hueRotation(.degrees(item.hue ?? 0))
+                                    .saturation(item.hue == nil ? 1 : 1.35)
                                 Text(item.name)
                                     .font(.fun(12, .semibold))
                                     .multilineTextAlignment(.center)

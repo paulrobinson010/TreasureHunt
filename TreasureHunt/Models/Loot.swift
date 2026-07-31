@@ -7,31 +7,38 @@ struct LootItem: Codable, Identifiable, Hashable {
     let name: String
     let huntName: String
     let date: Date
+    /// Hue rotation (degrees) applied to the emoji — turns the blue diamond
+    /// into rubies, emeralds, amethysts… Nil means natural colours.
+    let hue: Double?
 }
 
 enum LootCatalog {
-    /// The things a hunter might dig up.
-    static let all: [(emoji: String, name: String)] = [
-        ("💎", "Sparkly Diamond"),
-        ("🪙", "Gold Doubloon"),
-        ("👑", "Pirate Crown"),
-        ("🦜", "Chatty Parrot"),
-        ("🐚", "Singing Seashell"),
-        ("⭐", "Lucky Star"),
-        ("🗝️", "Mystery Key"),
-        ("🏺", "Ancient Jar"),
-        ("🦀", "Snappy Crab"),
-        ("🐢", "Wise Turtle"),
-        ("⚓", "Rusty Anchor"),
-        ("🧭", "Golden Compass"),
-        ("🔮", "Wizard's Orb"),
-        ("🪸", "Rainbow Coral"),
-        ("🦑", "Giant Squid"),
-        ("💰", "Bag of Gold"),
+    /// Gem-heavy by popular demand (a five-year-old's, specifically).
+    /// Gems appear twice so over half of digs sparkle.
+    static let all: [(emoji: String, name: String, hue: Double?)] = [
+        ("💎", "Blue Diamond", 0),
+        ("💎", "Ruby Red Gem", 160),
+        ("💎", "Emerald Gem", -80),
+        ("💎", "Amethyst Gem", 60),
+        ("💎", "Golden Gem", -155),
+        ("💎", "Pink Sparkle Gem", 130),
+        ("💎", "Blue Diamond", 0),
+        ("💎", "Ruby Red Gem", 160),
+        ("💎", "Emerald Gem", -80),
+        ("💎", "Amethyst Gem", 60),
+        ("🪙", "Gold Doubloon", nil),
+        ("👑", "Pirate Crown", nil),
+        ("🦜", "Chatty Parrot", nil),
+        ("⭐", "Lucky Star", nil),
+        ("🗝️", "Mystery Key", nil),
+        ("💰", "Bag of Gold", nil),
+        ("🧭", "Golden Compass", nil),
+        ("🐚", "Singing Seashell", nil),
     ]
 
     static func roll(huntName: String) -> LootItem {
         let pick = all.randomElement()!
-        return LootItem(id: UUID(), emoji: pick.emoji, name: pick.name, huntName: huntName, date: .now)
+        return LootItem(id: UUID(), emoji: pick.emoji, name: pick.name,
+                        huntName: huntName, date: .now, hue: pick.hue)
     }
 }

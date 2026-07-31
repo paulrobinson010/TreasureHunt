@@ -141,13 +141,27 @@ All gameplay thresholds live in `TreasureHunt/Models/Config.swift`:
 |---|---|---|
 | `displayRadius` | 50 m | Fuzzy circle drawn per unfound point |
 | `zoneRadius` | 25 m | Distance that wakes the compass |
-| `foundRadius` | 3 m | Distance that counts as "found" |
+| `foundRadius` | 3 m | Distance that starts the dig |
+| `maxDigRadius` | 8 m | Ceiling on the dig trigger when GPS is vague |
 | `onTargetTolerance` | 20° | How exactly you must point before it buzzes |
 | `previewRadius` | 150 m | Rough area circle in the pre-hunt preview |
 
 The spec said "within a meter" for finding a point, but phone GPS rarely
 resolves better than ~3 m even outdoors, so `foundRadius` defaults to 3 m to
-keep the game winnable. Drop it to 1–2 m if you want it harder.
+keep the game winnable. `digRadius(accuracy:)` opens the trigger up to match
+the reported GPS uncertainty (capped at `maxDigRadius`), because a phone
+reporting ±6 m can never measure a distance under 3 m even standing on the
+treasure.
+
+## Map modes while hunting
+
+| Mode | Behaviour |
+|---|---|
+| **Free** | Locked to the hunter, heading up — turn and the map turns. Pinch to zoom; panning is disabled so a stray drag can't break the follow. |
+| **Path** | Free mode plus a lime walking route to the target zone (`MKDirections`, routed to the *fuzzy* centre so it never gives the spot away). Requests are rate-limited to target changes, 40 m of wandering, or 45 s. |
+| **Roam** | Hands off: pan, zoom, rotate anywhere. |
+
+Zoom works in every mode; the arrow button re-centres.
 
 ## Privacy
 
