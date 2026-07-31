@@ -106,6 +106,12 @@ struct ParentGateView: View {
         return false
     }
 
+    private var lockoutMessage: String? {
+        let seconds = Int(DeviceSetup.lockedOutFor.rounded(.up))
+        guard seconds > 0 else { return nil }
+        return "Too many tries. Wait \(seconds) second\(seconds == 1 ? "" : "s") and try again."
+    }
+
     var body: some View {
         VStack(spacing: 18) {
             Text("🔒")
@@ -133,9 +139,10 @@ struct ParentGateView: View {
                 .focused($focused)
 
             if gate.wrongAnswer {
-                Text(isPasscode ? "That passcode isn't right." : "Not quite — have another go.")
+                Text(lockoutMessage ?? (isPasscode ? "That passcode isn't right." : "Not quite — have another go."))
                     .font(.fun(13))
                     .foregroundStyle(Color.brandRed)
+                    .multilineTextAlignment(.center)
             }
 
             Button {

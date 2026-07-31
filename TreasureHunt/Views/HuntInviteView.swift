@@ -13,6 +13,18 @@ struct HuntInviteView: View {
     /// check, and sharing one instance would have two screens racing to
     /// present the same sheet.
     @StateObject private var gate = ParentGate()
+    @EnvironmentObject private var crew: CrewStore
+
+    /// A stranger can call themselves anything, including the name of someone
+    /// already trusted. The signature will verify — as a *different* key — so
+    /// the collision has to be shouted about rather than glossed over.
+    private var impersonates: CrewCard? {
+        guard let sender else { return nil }
+        return crew.members.first {
+            $0.name.caseInsensitiveCompare(sender.name) == .orderedSame
+                && $0.publicKey != sender.publicKey
+        }
+    }
 
     private var senderName: String { sender?.name ?? "Someone" }
 
@@ -39,15 +51,26 @@ struct HuntInviteView: View {
             .padding(.vertical, 14)
             .background(Color.brandCard, in: RoundedRectangle(cornerRadius: 18))
 
-            Label(
-                sender == nil
-                    ? "This hunt doesn't say who it's from. Only accept hunts from someone you know."
-                    : "\(senderName) isn't in your crew yet. Accepting adds them, so their hunts arrive straight away from now on.",
-                systemImage: "person.badge.shield.checkmark"
-            )
-            .font(.fun(13))
-            .foregroundStyle(.secondary)
-            .multilineTextAlignment(.leading)
+            if impersonates != nil {
+                Label(
+                    "STOP — you already have a different \(senderName) in your crew, and this is NOT them. Anyone can put any name on a hunt. Unless you are certain who sent this, say no thanks.",
+                    systemImage: "exclamationmark.triangle.fill"
+                )
+                .font(.fun(14, .semibold))
+                .foregroundStyle(Color.brandRed)
+                .padding(12)
+                .background(Color.brandRed.opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
+            } else {
+                Label(
+                    sender == nil
+                        ? "This hunt doesn't say who it's from. Only accept hunts from someone you know."
+                        : "\(senderName) isn't in your crew yet. Accepting adds them, so their hunts arrive straight away from now on. Names aren't checked by anyone — only accept if you know who this is.",
+                    systemImage: "person.badge.shield.checkmark"
+                )
+                .font(.fun(13))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.leading)
+            }
 
             Button {
                 gate.guarding { onAccept() }

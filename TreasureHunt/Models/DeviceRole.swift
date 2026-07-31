@@ -52,10 +52,31 @@ enum DeviceSetup {
         save(hash(code))
     }
 
+    /// Wrong guesses cost time, escalating fast: four digits is only 10,000
+    /// combinations and a bored child has all afternoon.
+    private static let attemptsKey = "passcodeFailures"
+    private static let lockUntilKey = "passcodeLockedUntil"
+
+    static var lockedOutFor: TimeInterval {
+        let until = UserDefaults.standard.double(forKey: lockUntilKey)
+        return max(0, until - Date.now.timeIntervalSince1970)
+    }
+
     static func verify(_ code: String) -> Bool {
-        guard let stored = storedHash() else { return false }
-        // Constant-time-ish comparison; these are tiny local digests.
-        return stored == hash(code)
+        guard lockedOutFor <= 0, let stored = storedHash() else { return false }
+        if stored == hash(code) {
+            UserDefaults.standard.removeObject(forKey: attemptsKey)
+            UserDefaults.standard.removeObject(forKey: lockUntilKey)
+            return true
+        }
+        let failures = UserDefaults.standard.integer(forKey: attemptsKey) + 1
+        UserDefaults.standard.set(failures, forKey: attemptsKey)
+        if failures >= 3 {
+            // 30 s, 60 s, 120 s… capped at ten minutes.
+            let delay = min(30 * pow(2, Double(failures - 3)), 600)
+            UserDefaults.standard.set(Date.now.timeIntervalSince1970 + delay, forKey: lockUntilKey)
+        }
+        return false
     }
 
     static func clearPasscode() {
