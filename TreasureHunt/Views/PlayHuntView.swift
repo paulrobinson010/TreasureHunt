@@ -262,8 +262,11 @@ struct PlayHuntView: View {
                         }
                     } else if !hunt.sequential || point.id == hunt.unfoundPoints.first?.id {
                         // Sequential hunts reveal one zone at a time.
+                        // Solid bright edge: outdoors, in sunlight, a soft
+                        // wash of colour is easy to miss.
                         MapCircle(center: point.displayCenter, radius: Config.displayRadius)
-                            .foregroundStyle(Color.brandCyan.opacity(0.3))
+                            .foregroundStyle(Color.brandCyan.opacity(0.22))
+                            .stroke(Color.brandCyan, lineWidth: 5)
                     }
                 }
             }

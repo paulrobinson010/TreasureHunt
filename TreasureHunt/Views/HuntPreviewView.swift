@@ -25,7 +25,8 @@ struct HuntPreviewView: View {
                 UserAnnotation()
                 if let center = previewCenter {
                     MapCircle(center: center, radius: Config.previewRadius)
-                        .foregroundStyle(Color.brandCyan.opacity(0.25))
+                        .foregroundStyle(Color.brandCyan.opacity(0.2))
+                        .stroke(Color.brandCyan, lineWidth: 4)
                 }
             }
             .mapStyle(mapFlavor.style)
