@@ -11,11 +11,18 @@ final class ParentGate: ObservableObject {
     @Published var challenge: Challenge?
     @Published var wrongAnswer = false
 
-    /// One pass covers a stretch of grown-up work — nobody wants a check
-    /// between every hunt they make.
+    /// A hunter's phone re-locks the moment the app goes away — that's where
+    /// the risk is. A grown-up's own phone asks once per launch: it sits
+    /// behind their own device lock already, and a sum every ten minutes just
+    /// trains people to resent it.
+    private var unlockedThisSession = false
     private var unlockedUntil = Date.distantPast
     private let unlockMinutes: TimeInterval = 10 * 60
     private var pending: (() -> Void)?
+
+    private var isUnlocked: Bool {
+        DeviceSetup.isHunterPhone ? unlockedUntil > .now : unlockedThisSession
+    }
 
     enum Challenge {
         case sum(a: Int, b: Int)
@@ -42,7 +49,7 @@ final class ParentGate: ObservableObject {
     /// Runs `action` now if a grown-up has recently proved themselves,
     /// otherwise asks first.
     func guarding(_ action: @escaping () -> Void) {
-        if unlockedUntil > .now {
+        if isUnlocked {
             action()
             return
         }
@@ -76,6 +83,7 @@ final class ParentGate: ObservableObject {
             return
         }
         unlockedUntil = .now.addingTimeInterval(unlockMinutes)
+        unlockedThisSession = true
         self.challenge = nil
         let action = pending
         pending = nil
@@ -88,7 +96,8 @@ final class ParentGate: ObservableObject {
     }
 
     /// Re-lock when the app has been away — a phone handed back to a child
-    /// shouldn't still be open for business.
+    /// shouldn't still be open for business. Only meaningful on a hunter's
+    /// phone; a grown-up's stays unlocked until the app is quit.
     func lock() {
         unlockedUntil = .distantPast
     }

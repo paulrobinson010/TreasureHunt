@@ -63,8 +63,12 @@ enum ImportResult {
                 ? "\(name) has joined your crew! Send your card back so they can add you too."
                 : "\(name) is already in your crew."
         case .senderNotAllowed(let name):
-            let who = name.map { "\($0) isn't" } ?? "Whoever sent that hunt isn't"
-            return "\(who) in your crew, so the hunt wasn't opened. A grown-up can add them from their own phone."
+            let who = name ?? "Whoever sent that hunt"
+            return """
+            That hunt is from \(who), who isn't one of your grown-ups yet, so it didn't open.
+
+            Ask \(who) to send their hunting card from X-Marks — open that card here with the grown-up passcode, and their hunts will work from then on.
+            """
         case .duplicate(let name):
             return "You already have \"\(name)\"."
         case .failed:

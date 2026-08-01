@@ -7,6 +7,7 @@ struct ShareHuntView: View {
 
     @State private var link: URL?
     @State private var file: URL?
+    @State private var cardURL: URL?
     @State private var copied = false
 
     var body: some View {
@@ -37,10 +38,28 @@ struct ShareHuntView: View {
                     }
                 }
 
-                Text("Sent as \(HunterIdentity.name). The first hunt you send someone needs a grown-up on their phone to tap Accept — after that, your hunts arrive straight away.")
+                Text("Sent as \(HunterIdentity.name).")
                     .font(.fun(13))
                     .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+
+                VStack(spacing: 8) {
+                    Label("Sending to a hunter for the first time?", systemImage: "info.circle.fill")
+                        .font(.fun(13, .semibold))
+                        .foregroundStyle(Color.brandSand)
+                    Text("Their phone turns away hunts from grown-ups it doesn't know yet. Send them your hunting card too — they open it once with their passcode, and every hunt after that just works.")
+                        .font(.fun(12))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                    if let cardURL {
+                        ShareLink(item: cardMessage(cardURL)) {
+                            Label("Send my hunting card", systemImage: "person.badge.plus")
+                                .font(.fun(14, .semibold))
+                                .foregroundStyle(Color.brandCyan)
+                        }
+                    }
+                }
+                .padding(14)
+                .background(Color.brandCard, in: RoundedRectangle(cornerRadius: 18))
 
                 Spacer()
 
@@ -78,8 +97,13 @@ struct ShareHuntView: View {
             .onAppear {
                 link = try? HuntShareCodec.url(for: hunt)
                 file = try? HuntShareCodec.exportFile(for: hunt)
+                cardURL = try? HuntShareCodec.crewInviteURL()
             }
         }
+    }
+
+    private func cardMessage(_ url: URL) -> String {
+        "🏴‍☠️ \(HunterIdentity.name) here! Open this on the hunter's phone to add me as a trusted grown-up in X-Marks: \(url.absoluteString)"
     }
 
     private func shareMessage(for url: URL) -> String {

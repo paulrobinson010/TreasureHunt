@@ -42,21 +42,25 @@ struct CrewView: View {
             }
             .listRowBackground(Color.brandCard)
 
-            Section("Add someone early") {
+            Section("My hunting card") {
                 if let inviteURL {
                     ShareLink(item: inviteMessage(inviteURL)) {
                         Label("Send my hunting card", systemImage: "person.badge.plus")
                     }
                 }
-                Text("Optional — sending a hunt does this by itself. Your first hunt asks a grown-up on their phone to accept, and that adds you to their crew.")
-                    .font(.fun(12))
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("This is the handshake. A hunter's phone only opens hunts from grown-ups it already knows, and your card is how it comes to know you.")
+                    Text("Send it once per hunter. They open it on their phone and type their grown-up passcode, and from then on every hunt you send them opens straight away.")
+                    Text("Until you do, your hunts will be turned away on their phone — that's deliberate: it means nobody who simply knows their number can send them anywhere.")
+                }
+                .font(.fun(12))
+                .foregroundStyle(.secondary)
             }
             .listRowBackground(Color.brandCard)
 
-            Section("Who can send me hunts") {
+            Section("Grown-ups who can send hunts here") {
                 if crew.members.isEmpty {
-                    Text("Nobody yet. Hunts from anyone else need a grown-up to accept them first.")
+                    Text("Nobody yet. Hunts from anyone not on this list are turned away, with no way to accept them on this phone.")
                         .font(.fun(12))
                         .foregroundStyle(.secondary)
                 } else {
