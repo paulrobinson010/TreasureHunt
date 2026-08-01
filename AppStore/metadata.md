@@ -42,13 +42,36 @@ Real-world treasure hunts
 
 X-Marks is a family GPS treasure-hunt app. A parent drops treasure points on a map, adds a prize, and sends the hunt to their children as an encrypted link; the children physically walk to each point, guided by a compass and proximity beeps, and "dig up" the treasure on arrival.
 
-HOW TO REVIEW WITHOUT WALKING
+WHAT TO PASTE WHERE
 
-The making side works anywhere. On first launch choose "A grown-up's phone", enter a name, and skip the card step. Tap + to make a hunt: move the map, tap "Drop point on the X" a few times, name it, save, and you will see the share screen. That covers creation and sharing.
+Two links are supplied below. Both were generated on the same device, so the hunt's signature matches the hunting card — that pairing is what the safety design checks.
 
-To see the hunter side, import this sample hunt (open the app, tap Import, paste): [PASTE A HUNT LINK HERE]
+- HUNTING CARD: [PASTE CARD LINK HERE]
+- SAMPLE HUNT: [PASTE HUNT LINK HERE]
 
-Finding a point requires physically standing within a few metres of its GPS location, so the dig, prize and confetti screens cannot be triggered at a desk. Screenshots 4 and 5 show them. In the iOS Simulator they can be reached with Features > Location > Custom Location set to a point in the hunt.
+Import either by opening the app, tapping Import (top left), and pasting.
+
+PATH A — the grown-up experience (about two minutes, works at a desk)
+
+1. On first launch choose "A grown-up's phone", enter any name, then tap "I'll do this later" on the card step.
+2. Tap + to make a hunt: move the map, tap "Drop point on the X" two or three times, give it a name, Save. The share screen appears — this is the whole creation flow.
+3. Tap Import and paste the SAMPLE HUNT link. Because its sender is not yet known to this device, an invite screen appears naming the sender; accept it via the arithmetic gate. The hunt opens, showing the preview map with fuzzy zones and the guide arrow — the hunter's view.
+
+PATH B — the child device, and the safety behaviour (please try this one)
+
+Delete and reinstall the app first so the device starts fresh.
+
+1. On first launch choose "A young hunter's phone" and set any passcode, e.g. 1234.
+2. Note there is no + button anywhere: a child device cannot create hunts.
+3. Tap Import and paste the SAMPLE HUNT link. It is REFUSED — the sender is not a known grown-up, and there is no button anywhere to accept them. This is the core protection: knowing a child's phone number is not enough to send them to a location.
+4. Tap Import and paste the HUNTING CARD link. The app asks for the passcode from step 1. Enter it, and that sender becomes a trusted grown-up.
+5. Tap Import and paste the SAMPLE HUNT link again. It now opens, marked as coming from a trusted sender.
+
+Steps 3 to 5 are the entire trust model, demonstrated in under a minute.
+
+WALKING IS REQUIRED FOR THE REST
+
+Finding a point requires physically standing within a few metres of its GPS location, so the dig, prize and confetti screens cannot be triggered at a desk. Screenshots 4 and 5 show them. In the iOS Simulator they can be reached with Features > Location > Custom Location set to one of the hunt's points.
 
 CHILD SAFETY DESIGN — PLEASE NOTE
 
