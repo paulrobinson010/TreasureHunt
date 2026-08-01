@@ -22,6 +22,19 @@ enum DeviceSetup {
     private static let roleKey = "deviceRole"
     private static let passcodeTag = "uk.robbo-online.x-marks.parentpasscode"
 
+    private static let installedKey = "hasBeenInstalled"
+
+    /// UserDefaults is cleared by app deletion but the Keychain is not, so a
+    /// reinstall would otherwise inherit the old identity and passcode while
+    /// starting with an empty crew. Call once at launch, before anything
+    /// reads either.
+    static func clearLeftoversOnFreshInstall() {
+        guard !UserDefaults.standard.bool(forKey: installedKey) else { return }
+        HunterIdentity.reset()
+        clearPasscode()
+        UserDefaults.standard.set(true, forKey: installedKey)
+    }
+
     /// Nil until a grown-up has answered "who is this phone for?".
     static var role: DeviceRole? {
         guard let raw = UserDefaults.standard.string(forKey: roleKey) else { return nil }

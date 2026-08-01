@@ -34,6 +34,19 @@ enum HunterIdentity {
         try? privateKey.signature(for: data)
     }
 
+    /// Forget this device's identity. Keychain items outlive app deletion on
+    /// iOS, so without this a reinstalled app would keep its old signing key
+    /// while losing its crew — and would then reject its own former card as
+    /// "that's you", which looks exactly like a broken app.
+    static func reset() {
+        cached = nil
+        SecItemDelete([
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: keychainTag,
+        ] as CFDictionary)
+        UserDefaults.standard.removeObject(forKey: nameKey)
+    }
+
     // MARK: Keychain-backed key
 
     private static var cached: Curve25519.Signing.PrivateKey?

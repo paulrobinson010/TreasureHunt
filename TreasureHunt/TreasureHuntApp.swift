@@ -8,6 +8,8 @@ struct TreasureHuntApp: App {
     @State private var showSplash = true
 
     init() {
+        DeviceSetup.clearLeftoversOnFreshInstall()
+
         // Put the toy-box font and sand-gold colour on navigation titles —
         // SwiftUI's environment font doesn't reach the navigation bar.
         let sand = UIColor(red: 0.96, green: 0.79, blue: 0.32, alpha: 1)
