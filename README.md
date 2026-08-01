@@ -200,11 +200,15 @@ events where the treasure is genuinely packed away afterwards.
 
 | Mode | Behaviour |
 |---|---|
-| **Free** | Locked to the hunter, heading up — turn and the map turns. Pinch to zoom; panning is disabled so a stray drag can't break the follow. |
+| **Free** | Follows the hunter, heading up — turn and the map turns. Every gesture works normally; follow simply resumes ~6 s after you stop moving the map. |
 | **Path** | Free mode plus a lime walking route to the target zone (`MKDirections`, routed to the *fuzzy* centre so it never gives the spot away). Requests are rate-limited to target changes, 40 m of wandering, or 45 s. |
 | **Roam** | Hands off: pan, zoom, rotate anywhere. |
 
-Zoom works in every mode; the arrow button re-centres.
+Every gesture works in every mode. Follow modes were briefly defended by
+disabling panning, which was a mistake: a pinch always carries some pan with
+it, so blocking pan made zooming fight back — worst when zoomed in, where
+finger travel is largest. Follow is now restored on a timer instead, and the
+arrow button re-centres immediately.
 
 ## Privacy
 

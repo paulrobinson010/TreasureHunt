@@ -18,6 +18,8 @@ struct PlayHuntView: View {
     @State private var digLoot: LootItem?
     /// Current map rotation, so the guide arrow can point in screen space.
     @State private var cameraHeading: Double = 0
+    @State private var cameraToken = 0
+    @State private var recentreTask: Task<Void, Never>?
     @AppStorage("mapFlavor") private var mapFlavor: MapFlavor = .standard
     @AppStorage("huntMapMode") private var mapMode: HuntMapMode = .free
 
@@ -36,6 +38,7 @@ struct PlayHuntView: View {
                         flavor: mapFlavor,
                         mode: mapMode,
                         route: mapMode == .path ? routeProvider.route : nil,
+                        cameraToken: cameraToken,
                         camera: $camera
                     )
                     .equatable()
@@ -47,6 +50,15 @@ struct PlayHuntView: View {
                     if abs(GeoMath.angleDelta(cameraHeading, context.camera.heading)) > 3 {
                         cameraHeading = context.camera.heading
                     }
+                }
+                // Follow isn't defended by forbidding gestures any more — a
+                // pinch always carries some pan with it, and blocking that
+                // made zooming a fight. Instead every gesture is allowed and
+                // follow simply comes back a few seconds after the hunter
+                // stops moving the map.
+                .onMapCameraChange(frequency: .onEnd) { _ in
+                    guard mapMode.followsHunter, camera.positionedByUser else { return }
+                    scheduleRecentre()
                 }
                 .overlay(alignment: .top) {
                     VStack(spacing: 8) {
@@ -95,6 +107,7 @@ struct PlayHuntView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { locationManager.start() }
         .onDisappear {
+            recentreTask?.cancel()
             locationManager.stop()
             FeedbackManager.shared.stopBuzzing()
             FeedbackManager.shared.stopDetector()
@@ -103,7 +116,7 @@ struct PlayHuntView: View {
             update(with: newLocation)
         }
         .onChange(of: mapMode) { _, newMode in
-            camera = newMode.cameraPosition
+            recentre()
             if newMode == .path {
                 updateRoute()
             } else {
@@ -118,9 +131,23 @@ struct PlayHuntView: View {
     }
 
     private func recentre() {
-        camera = mapMode.followsHunter
-            ? mapMode.cameraPosition
-            : .userLocation(followsHeading: false, fallback: .automatic)
+        recentreTask?.cancel()
+        recentreTask = nil
+        withAnimation(.easeInOut(duration: 0.4)) {
+            camera = mapMode.cameraPosition
+        }
+        cameraToken += 1
+    }
+
+    /// Restarted on every gesture end, so a hunter studying the map is left
+    /// alone until they actually stop.
+    private func scheduleRecentre() {
+        recentreTask?.cancel()
+        recentreTask = Task {
+            try? await Task.sleep(for: .seconds(HuntMapMode.recentreDelay))
+            guard !Task.isCancelled else { return }
+            recentre()
+        }
     }
 
     private func statusBar(for hunt: Hunt) -> some View {
@@ -232,6 +259,10 @@ struct PlayHuntView: View {
         let flavor: MapFlavor
         let mode: HuntMapMode
         let route: MKPolyline?
+        /// Bumped whenever the camera is set deliberately. Without it the
+        /// equality check below would let SwiftUI skip the update and the
+        /// re-centre would never reach the map.
+        let cameraToken: Int
         @Binding var camera: MapCameraPosition
 
         static func == (a: Self, b: Self) -> Bool {
@@ -241,10 +272,11 @@ struct PlayHuntView: View {
                 && a.flavor == b.flavor
                 && a.mode == b.mode
                 && a.route === b.route
+                && a.cameraToken == b.cameraToken
         }
 
         var body: some View {
-            Map(position: $camera, interactionModes: mode.interactionModes) {
+            Map(position: $camera) {
                 UserAnnotation()
                 if let route {
                     MapPolyline(route)

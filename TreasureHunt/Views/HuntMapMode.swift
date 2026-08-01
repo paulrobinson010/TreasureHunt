@@ -3,11 +3,12 @@ import SwiftUI
 
 /// How the map behaves while hunting.
 enum HuntMapMode: String, CaseIterable, Identifiable {
-    /// Locked to the hunter, heading up: turn and the map turns.
+    /// Follows the hunter, heading up: turn and the map turns. Pan and zoom
+    /// freely whenever you like — it hands itself back after a few seconds.
     case free
     /// Same, plus a walking route drawn towards the target zone.
     case path
-    /// Hands off: pan, zoom and look around wherever you like.
+    /// Hands off entirely: wherever you leave the map is where it stays.
     case roam
 
     var id: String { rawValue }
@@ -30,11 +31,10 @@ enum HuntMapMode: String, CaseIterable, Identifiable {
 
     var followsHunter: Bool { self != .roam }
 
-    /// Follow modes keep zoom but drop panning — a stray drag used to knock
-    /// the map out of follow, which is exactly what hunters don't want.
-    var interactionModes: MapInteractionModes {
-        followsHunter ? [.zoom] : .all
-    }
+    /// How long after the hunter stops fiddling before a follow mode takes
+    /// the wheel again. Long enough to look around, short enough that the map
+    /// is pointing the right way when they start walking.
+    static let recentreDelay: TimeInterval = 6
 
     var cameraPosition: MapCameraPosition {
         followsHunter
